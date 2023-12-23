@@ -14,7 +14,13 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@res/api-files": ["libs/api/files/src/index.ts"],
+      "@res/auth": ["libs/api/auth/src/index.ts"],
+      "@res/database": ["libs/api/database/src/index.ts"],
+      "@res/guards": ["libs/api/shared/guards/src/index.ts"],
+      "@res/shared": ["libs/shared/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
