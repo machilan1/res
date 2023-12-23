@@ -15,12 +15,8 @@
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
         "assets": ["apps/api/src/assets"],
-        "webpackConfig": "apps/api/webpack.config.js"
-      },
-      "configurations": {
-        "development": {},
-        "production": {}
-      },
+        "webpackConfig": "apps/api/webpack.config.js",
+        
       "tsPlugins": [
         {
           "name": "@nestjs/swagger/plugin",
@@ -31,6 +27,11 @@
           }
         }
       ]
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
     },
     "serve": {
       "executor": "@nx/js:node",

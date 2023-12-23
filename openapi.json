@@ -1,15 +1,36 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/": {
-      "get": {
-        "operationId": "AppController_getData",
+    "/auth/register": {
+      "post": {
+        "operationId": "register",
+        "summary": "",
         "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentRegisterDto"
+              }
+            }
           }
-        }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Student"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     }
   },
@@ -29,6 +50,89 @@
         "type": "http"
       }
     },
-    "schemas": {}
+    "schemas": {
+      "StudentRegisterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "number"
+          },
+          "majorId": {
+            "type": "number"
+          },
+          "year": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "studentNumber",
+          "email",
+          "password",
+          "role",
+          "departmentId",
+          "majorId",
+          "year"
+        ]
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "number"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "major": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "studentNumber",
+          "name",
+          "email",
+          "department",
+          "major",
+          "year",
+          "role"
+        ]
+      }
+    }
   }
 }

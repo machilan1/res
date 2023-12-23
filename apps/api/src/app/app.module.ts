@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from '@res/api-guards';
@@ -19,7 +19,7 @@ import { AuthModule } from '@res/api-auth';
       signOptions: { expiresIn: '1hr' },
     }),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
     AppService,
     {
