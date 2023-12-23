@@ -1,10 +1,17 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Database, PG_CONNECTION } from '@res/database';
+import {
+  Database,
+  InsertStudent,
+  InsertUser,
+  PG_CONNECTION,
+  user,
+} from '@res/api-database';
 import * as bcrypt from 'bcrypt';
 import { eq } from 'drizzle-orm';
 import { StudentRegisterDto } from './dtos/student-register-dto';
+import { Student } from './entities/student.entity';
 
 interface SignATPayload {
   userId: number;
@@ -30,8 +37,17 @@ export class AuthService {
     studentRegisterDto: StudentRegisterDto
   ): Promise<Tokens> {
     //
+    const { email, name, password, phone, role }: InsertUser =
+      studentRegisterDto;
 
-    const newUser: Student[] = await this.conn
+    const {
+      studentNumber,
+      year,
+      departmentId,
+      majorId,
+    }: Omit<InsertStudent, 'userId'> = studentRegisterDto;
+
+    const [newUser]: Student[] = await this.conn
       .insert(user)
       .values(studentRegisterDto)
       .returning();
@@ -49,10 +65,10 @@ export class AuthService {
 
     return { at, rt };
   }
-  studentLogin(studentLoginDto: StudentLoginDto): Tokens {}
+  //   studentLogin(studentLoginDto: StudentLoginDto): Tokens {}
 
-  landlordRegister(landlordRegister: LandlordRegisterDto): Tokens {}
-  refresh(refreshTokenDto: RefresTokenDto): Tokens {}
+  //   landlordRegister(landlordRegister: LandlordRegisterDto): Tokens {}
+  //   refresh(refreshTokenDto: RefresTokenDto): Tokens {}
 
   //   utils
   private encrypt(password: string) {

@@ -5,7 +5,8 @@ export class Student {
   email!: string;
   department!: string;
   major!: string;
-  schoolYear!: number;
+  year!: number;
+  role!: string;
 
   constructor(data: Student) {
     Object.assign(this, data);
