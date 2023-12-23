@@ -2,9 +2,7 @@ import { CreateLandlordDto } from './dtos/create-landlord.dto';
 import { Injectable } from '@nestjs/common';
 import { updateLandlordDto } from './dtos/update-landlord.dto';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LandlordService {
   getLandlords() {
     return 'All landlords';

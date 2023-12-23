@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
-@ApiProperty('filter-options')
+@ApiTags('filter-options')
 @Controller('filter-options')
 export class FilterOptionsController {
   @Get()

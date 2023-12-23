@@ -1,1 +1,1 @@
-export * from './lib/landlords/landlords.component';
+export * from './lib/landlords/landlords.module';

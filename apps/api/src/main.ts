@@ -5,7 +5,6 @@
 
 import {
   ClassSerializerInterceptor,
-  ConsoleLogger,
   Logger,
   ValidationPipe,
 } from '@nestjs/common';

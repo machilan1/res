@@ -7,12 +7,22 @@ import { DatabaseModule } from '@res/api-database';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '@res/api-auth';
+import { ApiFilesModule } from '@res/api-files';
+import { LandlordsModule } from '@res/landlords';
+import { FilterOptionsModule } from '@res/filter-options';
+import { RentingsModule } from '@res/rentings';
+import { StudentsModule } from '@res/students';
 
 @Module({
   imports: [
     DatabaseModule,
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
+    ApiFilesModule,
+    LandlordsModule,
+    FilterOptionsModule,
+    RentingsModule,
+    StudentsModule,
     JwtModule.register({
       global: true,
       secret: process.env['JWT_SECRET'],

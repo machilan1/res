@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
-@ApiProperty('rentings')
+@ApiTags('rentings')
 @Controller('rentings')
 export class RentingsController {
   @Get()

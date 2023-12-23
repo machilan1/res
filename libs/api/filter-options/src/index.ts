@@ -1,1 +1,1 @@
-export * from './lib/filter-options/filter-options.component';
+export * from './lib/filter-options/filter-options.module';

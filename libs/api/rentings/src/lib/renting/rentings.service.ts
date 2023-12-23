@@ -1,9 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@nestjs/common';
 import { CreateRentingDto } from './dtos/create-renting.dtos';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RentingService {
   getRentings() {
     return 'All rentings';

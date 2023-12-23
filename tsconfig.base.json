@@ -21,7 +21,7 @@
       "@res/api-guards": ["libs/api/shared/guards/src/index.ts"],
       "@res/filter-options": ["libs/api/filter-options/src/index.ts"],
       "@res/landlords": ["libs/api/landlords/src/index.ts"],
-      "@res/renting": ["libs/api/renting/src/index.ts"],
+      "@res/rentings": ["libs/api/rentings/src/index.ts"],
       "@res/shared": ["libs/shared/src/index.ts"],
       "@res/students": ["libs/api/students/src/index.ts"]
     }
