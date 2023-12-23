@@ -15,11 +15,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@res/api-files": ["libs/api/files/src/index.ts"],
       "@res/api-auth": ["libs/api/auth/src/index.ts"],
       "@res/api-database": ["libs/api/database/src/index.ts"],
+      "@res/api-files": ["libs/api/files/src/index.ts"],
       "@res/api-guards": ["libs/api/shared/guards/src/index.ts"],
-      "@res/shared": ["libs/shared/src/index.ts"]
+      "@res/filter-options": ["libs/api/filter-options/src/index.ts"],
+      "@res/landlords": ["libs/api/landlords/src/index.ts"],
+      "@res/renting": ["libs/api/renting/src/index.ts"],
+      "@res/shared": ["libs/shared/src/index.ts"],
+      "@res/students": ["libs/api/students/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
