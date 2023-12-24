@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/auth/register": {
+    "/auth/register-student": {
       "post": {
-        "operationId": "register",
+        "operationId": "registerStudent",
         "summary": "",
         "parameters": [],
         "requestBody": {
@@ -11,7 +11,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StudentRegisterDto"
+                "$ref": "#/components/schemas/RegisterStudentDto"
               }
             }
           }
@@ -22,7 +22,167 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Student"
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/student-login": {
+      "post": {
+        "operationId": "studentLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register-landlord": {
+      "post": {
+        "operationId": "registerLandlord",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterLandlordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/landlord-login": {
+      "post": {
+        "operationId": "landlordLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LandlordLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register-admin": {
+      "post": {
+        "operationId": "registerAdmin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/admin-login": {
+      "post": {
+        "operationId": "adminLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
                 }
               }
             }
@@ -412,86 +572,184 @@
       }
     },
     "schemas": {
-      "StudentRegisterDto": {
+      "RegisterStudentDto": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
           },
           "phone": {
-            "type": "string"
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
           },
           "studentNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 9,
+            "pattern": "STUDENT_NUMBER_REGEX"
           },
           "password": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "departmentId": {
-            "type": "number"
-          },
-          "majorId": {
-            "type": "number"
-          },
-          "year": {
-            "type": "number"
+            "type": "string",
+            "maxLength": 6,
+            "pattern": "PASSWORD_REGEX"
           }
         },
         "required": [
           "name",
           "phone",
           "studentNumber",
-          "email",
-          "password",
-          "role",
-          "departmentId",
-          "majorId",
-          "year"
+          "password"
         ]
       },
-      "Student": {
+      "Tokens": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "number"
-          },
-          "studentNumber": {
+          "at": {
             "type": "string"
           },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "department": {
-            "type": "string"
-          },
-          "major": {
-            "type": "string"
-          },
-          "year": {
-            "type": "number"
-          },
-          "role": {
+          "rt": {
             "type": "string"
           }
         },
         "required": [
-          "userId",
+          "at",
+          "rt"
+        ]
+      },
+      "StudentLoginDto": {
+        "type": "object",
+        "properties": {
+          "studentNumber": {
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 9,
+            "pattern": "STUDENT_NUMBER_REGEX"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
           "studentNumber",
+          "password"
+        ]
+      },
+      "ContactTime": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ]
+      },
+      "RegisterLandlordDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "contactTime": {
+            "$ref": "#/components/schemas/ContactTime"
+          }
+        },
+        "required": [
           "name",
+          "phone",
           "email",
-          "department",
-          "major",
-          "year",
-          "role"
+          "password",
+          "contactTime"
+        ]
+      },
+      "LandlordLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RegisterAdminDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "password",
+          "email"
+        ]
+      },
+      "AdminLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
+          "email",
+          "password"
         ]
       },
       "UploadResponse": {

@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel, relations } from 'drizzle-orm';
 
 import {
   bigserial,
@@ -20,6 +20,7 @@ export const user = pgTable('app_user', {
   role: roleEnum('role').notNull(),
   phone: text('phone').notNull(),
   password: text('password').notNull(),
+  refreshToken: text('refresh_token'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -34,8 +35,14 @@ export const student = pgTable('student', {
     .notNull()
     .primaryKey(),
   studentNumber: text('student_number').notNull().unique(),
-  role: roleEnum('role').notNull(),
 });
+
+export const studentRelations = relations(student, ({ one }) => ({
+  user: one(user, {
+    fields: [student.userId],
+    references: [user.userId],
+  }),
+}));
 
 export type SelectStudent = InferSelectModel<typeof student>;
 export type InsertStudent = InferInsertModel<typeof student>;
@@ -52,12 +59,33 @@ export const landlord = pgTable('landlord', {
     .default({ start: 9, end: 21 }),
 });
 
+export type SelectLandlord = InferSelectModel<typeof landlord>;
+export type InsertLandlord = InferInsertModel<typeof landlord>;
+
+export const landlordRelations = relations(landlord, ({ one }) => ({
+  user: one(user, {
+    fields: [landlord.userId],
+    references: [user.userId],
+  }),
+}));
+
 export const admin = pgTable('admin', {
   userId: integer('user_id')
     .references(() => user.userId)
     .notNull()
     .primaryKey(),
+  email: text('email').notNull().unique(),
 });
+
+export type SelectAdmin = InferSelectModel<typeof admin>;
+export type InsertAdmin = InferInsertModel<typeof admin>;
+
+export const adminRelations = relations(admin, ({ one }) => ({
+  user: one(user, {
+    fields: [admin.userId],
+    references: [user.userId],
+  }),
+}));
 
 export const campus = pgTable('campus', {
   campusId: bigserial('campus_id', { mode: 'number' }).primaryKey().notNull(),
