@@ -1,19 +1,36 @@
-export class RentingEntity {
-  id!: number;
+import { Campus } from './campus.entity';
+import { Facility } from './facility.entity';
+import { Feature } from './feature.entity';
+import { Landlord } from './landlord.entity';
+import { Rule } from './rule.entity';
+import { HouseType as HouseType } from './type.entity';
+import { Type } from 'class-transformer';
+
+export class Renting {
+  rentingId!: number;
   title!: string;
   price!: number;
   address!: string;
   images!: string[];
-  campus!: string;
-  type!: string;
+
+  @Type(() => Campus)
+  campus!: Campus;
+  houseType!: HouseType;
   square!: number;
   floor!: number;
   totalFloor!: number;
-  descriptions!: string[];
-  rules!: string[];
-  facilities!: string[];
-  createdAt!: string;
-  landlord!: string;
+  description!: string;
+  rules!: Rule[];
+  facilities!: Facility[];
+  features!: Feature[];
+  createdAt!: Date;
+
+  @Type(() => Landlord)
+  landlord!: Landlord;
   isRented!: boolean;
-  isFavorite!: boolean;
+  // isFavorite!: boolean;
+
+  constructor(data: Renting) {
+    Object.assign(this, data);
+  }
 }

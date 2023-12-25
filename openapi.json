@@ -238,15 +238,38 @@
     },
     "/landlords": {
       "get": {
-        "operationId": "LandlordsController_getLandlords",
-        "parameters": [],
+        "operationId": "getLandlords",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Landlord"
+                  }
                 }
               }
             }
@@ -254,39 +277,34 @@
         },
         "tags": [
           "landlords"
-        ]
-      },
-      "post": {
-        "operationId": "LandlordsController_createLandlord",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+        ],
+        "security": [
+          {
+            "bearer": []
           }
-        },
-        "tags": [
-          "landlords"
         ]
       }
     },
     "/landlords/{landlordId}": {
       "get": {
         "operationId": "LandlordsController_getLandlordById",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Landlord"
                 }
               }
             }
@@ -294,11 +312,36 @@
         },
         "tags": [
           "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "patch": {
-        "operationId": "LandlordsController_updateLandlord",
-        "parameters": [],
+        "operationId": "updateLandlord",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLandlordDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -313,31 +356,44 @@
         },
         "tags": [
           "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "delete": {
         "operationId": "LandlordsController_deleteLandlord",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
           "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/filter-options": {
       "get": {
-        "operationId": "FilterOptionsController_getFilterOptions",
+        "operationId": "getFilterOptions",
+        "summary": "",
         "parameters": [],
         "responses": {
           "200": {
@@ -345,7 +401,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/FilterOption"
                 }
               }
             }
@@ -353,20 +409,72 @@
         },
         "tags": [
           "filter-options"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
     "/rentings": {
       "get": {
-        "operationId": "RentingsController_getRentings",
-        "parameters": [],
+        "operationId": "getRentings",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "houseTypeIds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "campusIds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Renting"
+                  }
                 }
               }
             }
@@ -374,39 +482,61 @@
         },
         "tags": [
           "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "post": {
         "operationId": "RentingsController_createRenting",
         "parameters": [],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRentingDto"
               }
             }
           }
         },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
         "tags": [
           "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
-    "/rentings/{id}": {
+    "/rentings/{rentingId}": {
       "get": {
         "operationId": "RentingsController_getRentingById",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Renting"
                 }
               }
             }
@@ -414,18 +544,42 @@
         },
         "tags": [
           "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "patch": {
         "operationId": "RentingsController_updateRenting",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRentingDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object"
                 }
               }
             }
@@ -433,8 +587,15 @@
         },
         "tags": [
           "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
-      },
+      }
+    },
+    "/rentings/{id}": {
       "delete": {
         "operationId": "RentingsController_deleteRenting",
         "parameters": [],
@@ -452,6 +613,11 @@
         },
         "tags": [
           "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -762,6 +928,460 @@
         "required": [
           "path"
         ]
+      },
+      "RentingRes": {
+        "type": "object",
+        "properties": {
+          "rentingId": {
+            "type": "number"
+          },
+          "houseTypeId": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "landlordId": {
+            "type": "number",
+            "nullable": true
+          },
+          "campusId": {
+            "type": "number",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "isRented": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentingId",
+          "houseTypeId",
+          "createdAt",
+          "landlordId",
+          "campusId",
+          "address",
+          "price",
+          "title",
+          "images",
+          "square",
+          "floor",
+          "totalFloor",
+          "isRented"
+        ]
+      },
+      "Landlord": {
+        "type": "object",
+        "properties": {
+          "rentings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentingRes"
+            }
+          },
+          "landlordId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "endTime": {
+            "type": "number"
+          },
+          "banned": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentings",
+          "landlordId",
+          "name",
+          "phone",
+          "email",
+          "startTime",
+          "endTime",
+          "banned"
+        ]
+      },
+      "UpdateLandlordDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "email": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
+          },
+          "contactTime": {
+            "$ref": "#/components/schemas/ContactTime"
+          }
+        }
+      },
+      "Campus": {
+        "type": "object",
+        "properties": {
+          "campusId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "campusId",
+          "name"
+        ]
+      },
+      "HouseType": {
+        "type": "object",
+        "properties": {
+          "houseTypeId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "houseTypeId",
+          "name"
+        ]
+      },
+      "Facility": {
+        "type": "object",
+        "properties": {
+          "facilityId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "facilityId",
+          "name",
+          "icon"
+        ]
+      },
+      "FilterOption": {
+        "type": "object",
+        "properties": {
+          "campus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Campus"
+            }
+          },
+          "houseType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HouseType"
+            }
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Facility"
+            }
+          }
+        },
+        "required": [
+          "campus",
+          "houseType",
+          "facilities"
+        ]
+      },
+      "Rule": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "number"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ruleId",
+          "content"
+        ]
+      },
+      "Feature": {
+        "type": "object",
+        "properties": {
+          "featureId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "featureId",
+          "name"
+        ]
+      },
+      "Renting": {
+        "type": "object",
+        "properties": {
+          "rentingId": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "address": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "campus": {
+            "$ref": "#/components/schemas/Campus"
+          },
+          "houseType": {
+            "$ref": "#/components/schemas/HouseType"
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            }
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Facility"
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "landlord": {
+            "$ref": "#/components/schemas/Landlord"
+          },
+          "isRented": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentingId",
+          "title",
+          "price",
+          "address",
+          "images",
+          "campus",
+          "houseType",
+          "square",
+          "floor",
+          "totalFloor",
+          "description",
+          "rules",
+          "facilities",
+          "features",
+          "createdAt",
+          "landlord",
+          "isRented"
+        ]
+      },
+      "CreateRentingDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "houseTypeId": {
+            "type": "number"
+          },
+          "campusId": {
+            "type": "number"
+          },
+          "address": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "facilityIds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "houseTypeId",
+          "campusId",
+          "address",
+          "price",
+          "square",
+          "floor",
+          "totalFloor"
+        ]
+      },
+      "UpdateRentingDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "typeId": {
+            "type": "number"
+          },
+          "campusId": {
+            "type": "number"
+          },
+          "address": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            }
+          },
+          "facilityIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
       }
     }
   }

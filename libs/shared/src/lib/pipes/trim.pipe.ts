@@ -12,6 +12,8 @@ export class TrimPipe implements PipeTransform {
   }
 
   private trim(values) {
+    console.log('---values');
+    console.log(values);
     Object.keys(values).forEach((key) => {
       if (key !== 'password') {
         if (this.isObj(values[key])) {
@@ -28,7 +30,16 @@ export class TrimPipe implements PipeTransform {
 
   transform(values: any, metadata: ArgumentMetadata) {
     const { type } = metadata;
-    if (this.isObj(values) && type === 'body') {
+
+    console.log('---metadata', metadata);
+    console.log('---type', type);
+    // console.log(this.isObj(values));
+    console.log('---values', values);
+    if (values && (type === 'param' || type === 'custom')) {
+      return this.trim(values);
+    }
+
+    if (this.isObj(values) && (type === 'body' || type === 'query')) {
       return this.trim(values);
     }
 

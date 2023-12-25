@@ -35,6 +35,7 @@ export const student = pgTable('student', {
     .notNull()
     .primaryKey(),
   studentNumber: text('student_number').notNull().unique(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export const studentRelations = relations(student, ({ one }) => ({
@@ -57,16 +58,18 @@ export const landlord = pgTable('landlord', {
   contactTime: jsonb('contact_time')
     .$type<{ start: number; end: number }>()
     .default({ start: 9, end: 21 }),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export type SelectLandlord = InferSelectModel<typeof landlord>;
 export type InsertLandlord = InferInsertModel<typeof landlord>;
 
-export const landlordRelations = relations(landlord, ({ one }) => ({
+export const landlordRelations = relations(landlord, ({ one, many }) => ({
   user: one(user, {
     fields: [landlord.userId],
     references: [user.userId],
   }),
+  rentings: many(renting),
 }));
 
 export const admin = pgTable('admin', {
@@ -75,6 +78,7 @@ export const admin = pgTable('admin', {
     .notNull()
     .primaryKey(),
   email: text('email').notNull().unique(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export type SelectAdmin = InferSelectModel<typeof admin>;
@@ -90,28 +94,51 @@ export const adminRelations = relations(admin, ({ one }) => ({
 export const campus = pgTable('campus', {
   campusId: bigserial('campus_id', { mode: 'number' }).primaryKey().notNull(),
   name: text('name').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
-export const type = pgTable('type', {
-  typeId: bigserial('type_id', { mode: 'number' }).primaryKey().notNull(),
+export const houseType = pgTable('house_type', {
+  houseTypeId: bigserial('house_type_id', { mode: 'number' })
+    .primaryKey()
+    .notNull(),
   name: text('name').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export const rule = pgTable('rule', {
   ruleId: bigserial('rule_id', { mode: 'number' }).primaryKey().notNull(),
+  rentingId: integer('renting_id')
+    .references(() => renting.rentingId)
+    .notNull(),
   content: text('content').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectRule = InferSelectModel<typeof rule>;
+export type InsertRule = InferInsertModel<typeof rule>;
+
+export const ruleRelations = relations(rule, ({ one }) => ({
+  user: one(renting, {
+    fields: [rule.rentingId],
+    references: [renting.rentingId],
+  }),
+}));
 
 export const renting = pgTable('renting', {
   rentingId: bigserial('renting_id', { mode: 'number' }).primaryKey().notNull(),
-  typeId: integer('type_id')
-    .references(() => type.typeId)
+  houseTypeId: integer('house_type_id')
+    .references(() => houseType.houseTypeId)
     .notNull(),
-  landlordId: integer('landlord_id').references(() => landlord.userId),
-  campusId: integer('campus_id').references(() => campus.campusId),
+  landlordId: integer('landlord_id')
+    .references(() => landlord.userId)
+    .notNull(),
+  campusId: integer('campus_id')
+    .references(() => campus.campusId)
+    .notNull(),
   address: text('address').notNull(),
   price: integer('price').notNull(),
   title: text('title').notNull(),
+  description: text('description').notNull(),
   images: jsonb('images').$type<string[]>().default([]).notNull(),
   square: integer('square').notNull(),
   floor: integer('floor').notNull(),
@@ -120,7 +147,29 @@ export const renting = pgTable('renting', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectRenting = InferSelectModel<typeof renting>;
+export type InsertRenting = InferInsertModel<typeof renting>;
+
+export const rentingRelations = relations(renting, ({ one, many }) => ({
+  facilities: many(rentingFacility),
+  features: many(feature),
+  landlord: one(landlord, {
+    fields: [renting.landlordId],
+    references: [landlord.userId],
+  }),
+  houseType: one(houseType, {
+    fields: [renting.houseTypeId],
+    references: [houseType.houseTypeId],
+  }),
+  campus: one(campus, {
+    fields: [renting.campusId],
+    references: [campus.campusId],
+  }),
+  rules: many(rule),
+}));
 
 export const rentingRecord = pgTable('renting_record', {
   rentingRecordId: bigserial('renting_record_id', { mode: 'number' })
@@ -136,19 +185,38 @@ export const rentingRecord = pgTable('renting_record', {
     .defaultNow()
     .notNull(),
   action: recordActionEnum('action').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export const rentingFacility = pgTable('renting_facility', {
   rentingFacilityId: bigserial('renting_facility_id', { mode: 'number' })
     .primaryKey()
     .notNull(),
-  facilityId: integer('dacility_id')
+  facilityId: integer('facility_id')
     .references(() => facility.facilityId)
     .notNull(),
   rentingId: integer('renting_id')
     .references(() => renting.rentingId)
     .notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectRentingFacility = InferSelectModel<typeof rentingFacility>;
+export type InsertRentingFacility = InferInsertModel<typeof rentingFacility>;
+
+export const rentingFacilityRelations = relations(
+  rentingFacility,
+  ({ one }) => ({
+    renting: one(renting, {
+      fields: [rentingFacility.rentingId],
+      references: [renting.rentingId],
+    }),
+    facility: one(facility, {
+      fields: [rentingFacility.facilityId],
+      references: [facility.facilityId],
+    }),
+  })
+);
 
 export const facility = pgTable('facility', {
   facilityId: bigserial('facility_id', { mode: 'number' })
@@ -156,15 +224,27 @@ export const facility = pgTable('facility', {
     .primaryKey(),
   name: text('name').notNull(),
   icon: text('icon').notNull(),
-  isTag: boolean('is_tag').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export const feature = pgTable('feature', {
   featureId: bigserial('feature_id', { mode: 'number' }).notNull().primaryKey(),
-  caseId: integer('case_id')
+  rentingId: integer('renting_id')
     .references(() => renting.rentingId)
     .notNull(),
+  name: text('name').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export const featureRelations = relations(feature, ({ one }) => ({
+  user: one(renting, {
+    fields: [feature.rentingId],
+    references: [renting.rentingId],
+  }),
+}));
+
+export type SelectFeature = InferSelectModel<typeof feature>;
+export type InsertFeature = InferInsertModel<typeof feature>;
 
 export const favorite = pgTable('favorite', {
   favoriteId: bigserial('favorite_id', { mode: 'number' })
@@ -179,4 +259,5 @@ export const favorite = pgTable('favorite', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });

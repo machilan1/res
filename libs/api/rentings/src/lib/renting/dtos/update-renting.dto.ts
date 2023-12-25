@@ -1,15 +1,24 @@
+import { Feature } from '../entity/feature.entity';
+import { Rule } from '../entity/rule.entity';
+import { Facility } from '../entity/facility.entity';
+
 export class UpdateRentingDto {
+  // landlordId!: number;
   title?: string;
-  price?: number;
+  description?: string;
+  typeId?: number;
+  campusId?: number;
   address?: string;
-  images?: string[];
-  campus?: string;
-  type?: string;
+  price?: number;
   square?: number;
   floor?: number;
   totalFloor?: number;
-  descriptions?: string[];
-  rules?: string[];
-  facilities?: string[];
-  landlord?: string;
+
+  images?: string[];
+
+  features?: Feature[];
+
+  rules?: Rule[];
+
+  facilityIds?: number[];
 }

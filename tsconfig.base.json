@@ -19,6 +19,7 @@
       "@res/api-database": ["libs/api/database/src/index.ts"],
       "@res/api-files": ["libs/api/files/src/index.ts"],
       "@res/api-guards": ["libs/api/shared/guards/src/index.ts"],
+      "@res/api-types": ["libs/api/types/src/index.ts"],
       "@res/filter-options": ["libs/api/filter-options/src/index.ts"],
       "@res/landlords": ["libs/api/landlords/src/index.ts"],
       "@res/rentings": ["libs/api/rentings/src/index.ts"],
