@@ -76,8 +76,9 @@ export class RentingsController {
   }
 
   @ApiBearerAuth()
-  @Delete(':id')
-  deleteRenting() {
-    return 'Delete renting';
+  @Delete(':rentingId')
+  async deleteRenting(@Param('rentingId', ParseIntPipe) rentingId: number) {
+    const res = await this.rentingService.deleteRenting(rentingId);
+    return res;
   }
 }

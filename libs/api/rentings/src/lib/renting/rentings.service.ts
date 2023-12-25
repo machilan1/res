@@ -17,7 +17,7 @@ import {
   rule,
   rentingFacility,
 } from '@res/api-database';
-import { SQLWrapper, and, eq, inArray } from 'drizzle-orm';
+import { SQLWrapper, and, eq, inArray, isNull } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 
@@ -26,18 +26,17 @@ export class RentingService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
   async getRentings(params: GetRentingsParam): Promise<Renting[]> {
-    console.log(123);
-
     const conditions: SQLWrapper[] = [];
 
     if (params.houseTypeIds) {
       conditions.push(inArray(houseType.houseTypeId, params.houseTypeIds));
-      console.log('---typeIds');
     }
 
     if (params.campusIds) {
       conditions.push(inArray(campus.campusId, params.campusIds));
     }
+
+    conditions.push(isNull(renting.deletedAt));
 
     const res = await this.conn.query.renting.findMany({
       with: {
@@ -112,9 +111,6 @@ export class RentingService {
   }
 
   async createRenting(landlordId: number, body: CreateRentingDto) {
-    console.log('landlordId', landlordId);
-
-    // Todo : 創建feature 'rules, renting facility
     const {
       campusId,
       houseTypeId,
@@ -213,9 +209,6 @@ export class RentingService {
 
     const { features, rules, facilityIds } = body;
 
-    console.log('---updateRenting');
-    console.log(updaterId);
-
     let res;
     if (
       campusId ||
@@ -253,7 +246,12 @@ export class RentingService {
           this.conn
             .update(feature)
             .set(entry)
-            .where(eq(feature.featureId, entry.featureId))
+            .where(
+              and(
+                eq(feature.featureId, entry.featureId),
+                eq(feature.rentingId, rentingId)
+              )
+            )
         );
       });
     }
@@ -261,7 +259,12 @@ export class RentingService {
     if (rules) {
       rules.forEach((entry) => {
         updates.push(
-          this.conn.update(rule).set(entry).where(eq(rule.ruleId, entry.ruleId))
+          this.conn
+            .update(rule)
+            .set(entry)
+            .where(
+              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId))
+            )
         );
       });
     }
@@ -285,7 +288,6 @@ export class RentingService {
 
     try {
       const res = await Promise.all(updates);
-      console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -293,7 +295,17 @@ export class RentingService {
     return res;
   }
 
-  deleteRenting(rentingId: number) {
-    return `Delete renting with id ${rentingId}`;
+  async deleteRenting(rentingId: number) {
+    const [res] = await this.conn
+      .update(renting)
+      .set({ deletedAt: new Date() })
+      .where(and(eq(renting.rentingId, rentingId), isNull(renting.deletedAt)))
+      .returning();
+
+    if (!res) {
+      throw new NotFoundException();
+    }
+
+    return res;
   }
 }

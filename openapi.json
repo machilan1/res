@@ -287,7 +287,8 @@
     },
     "/landlords/{landlordId}": {
       "get": {
-        "operationId": "LandlordsController_getLandlordById",
+        "operationId": "getLandlordById",
+        "summary": "",
         "parameters": [
           {
             "name": "landlordId",
@@ -364,7 +365,8 @@
         ]
       },
       "delete": {
-        "operationId": "LandlordsController_deleteLandlord",
+        "operationId": "deleteLandlord",
+        "summary": "",
         "parameters": [
           {
             "name": "landlordId",
@@ -593,22 +595,22 @@
             "bearer": []
           }
         ]
-      }
-    },
-    "/rentings/{id}": {
+      },
       "delete": {
         "operationId": "RentingsController_deleteRenting",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
@@ -631,7 +633,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Student"
+                  }
                 }
               }
             }
@@ -639,39 +644,34 @@
         },
         "tags": [
           "students"
-        ]
-      },
-      "post": {
-        "operationId": "StudentsController_createStudent",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+        ],
+        "security": [
+          {
+            "bearer": []
           }
-        },
-        "tags": [
-          "students"
         ]
       }
     },
-    "/students/studentId": {
+    "/students/{studentId}": {
       "get": {
         "operationId": "StudentsController_getStudentById",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Student"
                 }
               }
             }
@@ -679,44 +679,11 @@
         },
         "tags": [
           "students"
-        ]
-      },
-      "patch": {
-        "operationId": "StudentsController_updateStudent",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+        ],
+        "security": [
+          {
+            "bearer": []
           }
-        },
-        "tags": [
-          "students"
-        ]
-      },
-      "delete": {
-        "operationId": "StudentsController_deleteStudent",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "students"
         ]
       }
     }
@@ -1260,31 +1227,40 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 64
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "houseTypeId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "campusId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "address": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "price": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "square": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "floor": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "totalFloor": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "images": {
             "type": "array",
@@ -1331,31 +1307,40 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 64
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "typeId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "campusId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "address": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "price": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "square": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "floor": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "totalFloor": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "images": {
             "type": "array",
@@ -1378,10 +1363,65 @@
           "facilityIds": {
             "type": "array",
             "items": {
-              "type": "number"
+              "type": "number",
+              "minimum": 1
             }
           }
         }
+      },
+      "Favorite": {
+        "type": "object",
+        "properties": {
+          "favoriteId": {
+            "type": "number"
+          },
+          "studentId": {
+            "type": "number"
+          },
+          "rentingId": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "favoriteId",
+          "studentId",
+          "rentingId",
+          "createdAt"
+        ]
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "favorites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Favorite"
+            }
+          }
+        },
+        "required": [
+          "studentId",
+          "name",
+          "studentNumber",
+          "phone",
+          "favorites"
+        ]
       }
     }
   }

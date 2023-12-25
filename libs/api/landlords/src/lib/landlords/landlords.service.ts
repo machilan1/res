@@ -5,11 +5,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UpdateLandlordDto } from './dtos/update-landlord.dto';
-import { Database, PG_CONNECTION, landlord, user } from '@res/api-database';
+import {
+  Database,
+  PG_CONNECTION,
+  landlord,
+  renting,
+  user,
+} from '@res/api-database';
 
 import { GetLandlordsParam } from './dtos/get-landlord-param.dto';
-import { DEFAULT_LIMIT, DEFAULT_OFFSET } from '@res/shared';
-import { eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 
 @Injectable()
 export class LandlordService {
@@ -17,9 +22,9 @@ export class LandlordService {
 
   async getLandlords(params: GetLandlordsParam) {
     const res = await this.conn.query.landlord.findMany({
-      with: { user: true, rentings: true },
-      limit: params.limit ?? DEFAULT_LIMIT,
-      offset: params.offset ?? DEFAULT_OFFSET,
+      with: { user: true, rentings: { where: isNull(renting.deletedAt) } },
+      limit: params.limit,
+      offset: params.offset,
       columns: { banned: true, contactTime: true, email: true, userId: true },
       where: isNull(landlord.deletedAt),
     });
@@ -30,7 +35,7 @@ export class LandlordService {
   async getLandlordById(landlordId: number) {
     const res = await this.conn.query.landlord.findFirst({
       with: { user: true, rentings: true },
-      where: eq(landlord.userId, landlordId) && isNull(landlord.deletedAt),
+      where: and(eq(landlord.userId, landlordId), isNull(landlord.deletedAt)),
     });
 
     if (!res) {
@@ -45,16 +50,22 @@ export class LandlordService {
 
     try {
       await this.conn.transaction(async (tx) => {
-        await tx
-          .update(user)
-          .set({ name, phone })
-          .where(eq(user.userId, landlordId))
-          .returning();
-        await tx
-          .update(landlord)
-          .set({ email, banned, contactTime })
-          .where(eq(landlord.userId, landlordId))
-          .returning();
+        if (name || phone) {
+          await tx
+            .update(user)
+            .set({ name, phone })
+            .where(eq(user.userId, landlordId))
+            .returning();
+        }
+
+        if (email || banned || contactTime) {
+          await tx
+            .update(landlord)
+            .set({ email, banned, contactTime })
+            .where(
+              and(eq(landlord.userId, landlordId), isNull(landlord.deletedAt))
+            );
+        }
       });
     } catch (err) {
       console.log('---updateLandlord');
@@ -64,9 +75,14 @@ export class LandlordService {
   }
 
   async deleteLandlord(landlordId: number) {
-    await this.conn
+    const res = await this.conn
       .update(landlord)
       .set({ deletedAt: new Date() })
-      .where(eq(user.userId, landlordId));
+      .where(and(eq(landlord.userId, landlordId), isNull(landlord.deletedAt)))
+      .returning();
+
+    if (!res || res.length === 0) {
+      throw new NotFoundException();
+    }
   }
 }

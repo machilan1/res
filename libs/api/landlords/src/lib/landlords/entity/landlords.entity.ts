@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-
 import { IsArray } from 'class-validator';
 
 class RentingRes {
@@ -31,6 +30,7 @@ export class Landlord {
   banned!: boolean;
 
   constructor(data: getLandlordsRes) {
+    console.log('---data', data);
     this.email = data.email;
     this.banned = data.banned;
     this.landlordId = data.userId;

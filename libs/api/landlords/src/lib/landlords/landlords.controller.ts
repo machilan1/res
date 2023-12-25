@@ -20,9 +20,9 @@ import { UpdateLandlordDto } from './dtos/update-landlord.dto';
 export class LandlordsController {
   constructor(private landlordService: LandlordService) {}
 
+  @Get()
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'getLandlords' })
-  @Get()
   async getLandlords(@Query() params: GetLandlordsParam): Promise<Landlord[]> {
     const res = await this.landlordService.getLandlords(params);
 
@@ -31,8 +31,9 @@ export class LandlordsController {
     return temp;
   }
 
-  @ApiBearerAuth()
   @Get(':landlordId')
+  @ApiBearerAuth()
+  @ApiOperation({ operationId: 'getLandlordById' })
   async getLandlordById(
     @Param('landlordId', ParseIntPipe) landlordId: number
   ): Promise<Landlord> {
@@ -41,9 +42,9 @@ export class LandlordsController {
     return new Landlord(res);
   }
 
+  @Patch(':landlordId')
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'updateLandlord' })
-  @Patch(':landlordId')
   async updateLandlord(
     @Param('landlordId', ParseIntPipe) landlordId: number,
     @Body() updateLandlordDto: UpdateLandlordDto
@@ -53,8 +54,9 @@ export class LandlordsController {
     return 'Landlord updated';
   }
 
-  @ApiBearerAuth()
   @Delete(':landlordId')
+  @ApiBearerAuth()
+  @ApiOperation({ operationId: 'deleteLandlord' })
   async deleteLandlord(@Param('landlordId', ParseIntPipe) landlordId: number) {
     await this.landlordService.deleteLandlord(landlordId);
   }

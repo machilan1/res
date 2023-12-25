@@ -38,11 +38,12 @@ export const student = pgTable('student', {
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
-export const studentRelations = relations(student, ({ one }) => ({
+export const studentRelations = relations(student, ({ one, many }) => ({
   user: one(user, {
     fields: [student.userId],
     references: [user.userId],
   }),
+  favorites: many(favorite),
 }));
 
 export type SelectStudent = InferSelectModel<typeof student>;
@@ -237,6 +238,7 @@ export const feature = pgTable('feature', {
 });
 
 export const featureRelations = relations(feature, ({ one }) => ({
+  // Todo : check this part
   user: one(renting, {
     fields: [feature.rentingId],
     references: [renting.rentingId],
@@ -253,7 +255,7 @@ export const favorite = pgTable('favorite', {
   studentId: integer('student_id')
     .references(() => user.userId)
     .notNull(),
-  caseId: integer('case_id')
+  rentingId: integer('renting_id')
     .references(() => renting.rentingId)
     .notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
@@ -261,3 +263,15 @@ export const favorite = pgTable('favorite', {
     .notNull(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export const favoriteRelations = relations(favorite, ({ one }) => ({
+  renting: one(renting, {
+    fields: [favorite.rentingId],
+    references: [renting.rentingId],
+  }),
+
+  student: one(student, {
+    fields: [favorite.studentId],
+    references: [student.userId],
+  }),
+}));
