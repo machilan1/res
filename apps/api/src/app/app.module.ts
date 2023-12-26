@@ -8,10 +8,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '@res/api-auth';
 import { ApiFilesModule } from '@res/api-files';
-import { LandlordsModule } from '@res/landlords';
-import { FilterOptionsModule } from '@res/filter-options';
-import { RentingsModule } from '@res/rentings';
-import { StudentsModule } from '@res/students';
+import { LandlordsModule } from '@res/api-landlords';
+import { FilterOptionsModule } from '@res/api-filter-options';
+import { RentingsModule } from '@res/api-rentings';
+import { StudentsModule } from '@res/api-students';
 
 @Module({
   imports: [

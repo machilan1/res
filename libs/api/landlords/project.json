@@ -1,5 +1,5 @@
 {
-  "name": "landlords",
+  "name": "api-landlords",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/api/landlords/src",
   "prefix": "res",

@@ -268,7 +268,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Landlord"
+                    "type": "object"
                   }
                 }
               }
@@ -305,7 +305,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Landlord"
+                  "type": "object"
                 }
               }
             }
@@ -403,7 +403,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FilterOption"
+                  "type": "object"
                 }
               }
             }
@@ -475,7 +475,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Renting"
+                    "type": "object"
                   }
                 }
               }
@@ -538,7 +538,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Renting"
+                  "type": "object"
                 }
               }
             }
@@ -610,7 +610,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -636,7 +643,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Student"
+                    "type": "object"
                   }
                 }
               }
@@ -673,7 +680,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Student"
+                  "type": "object"
                 }
               }
             }
@@ -976,113 +983,6 @@
           "path"
         ]
       },
-      "RentingRes": {
-        "type": "object",
-        "properties": {
-          "rentingId": {
-            "type": "number"
-          },
-          "houseTypeId": {
-            "type": "number"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "landlordId": {
-            "type": "number",
-            "nullable": true
-          },
-          "campusId": {
-            "type": "number",
-            "nullable": true
-          },
-          "address": {
-            "type": "string"
-          },
-          "price": {
-            "type": "number"
-          },
-          "title": {
-            "type": "string"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "square": {
-            "type": "number"
-          },
-          "floor": {
-            "type": "number"
-          },
-          "totalFloor": {
-            "type": "number"
-          },
-          "isRented": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "rentingId",
-          "houseTypeId",
-          "createdAt",
-          "landlordId",
-          "campusId",
-          "address",
-          "price",
-          "title",
-          "images",
-          "square",
-          "floor",
-          "totalFloor",
-          "isRented"
-        ]
-      },
-      "Landlord": {
-        "type": "object",
-        "properties": {
-          "rentings": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RentingRes"
-            }
-          },
-          "landlordId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "startTime": {
-            "type": "number"
-          },
-          "endTime": {
-            "type": "number"
-          },
-          "banned": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "rentings",
-          "landlordId",
-          "name",
-          "phone",
-          "email",
-          "startTime",
-          "endTime",
-          "banned"
-        ]
-      },
       "UpdateLandlordDto": {
         "type": "object",
         "properties": {
@@ -1107,201 +1007,6 @@
             "$ref": "#/components/schemas/ContactTime"
           }
         }
-      },
-      "Campus": {
-        "type": "object",
-        "properties": {
-          "campusId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "campusId",
-          "name"
-        ]
-      },
-      "HouseType": {
-        "type": "object",
-        "properties": {
-          "houseTypeId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "houseTypeId",
-          "name"
-        ]
-      },
-      "Facility": {
-        "type": "object",
-        "properties": {
-          "facilityId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "facilityId",
-          "name",
-          "icon"
-        ]
-      },
-      "FilterOption": {
-        "type": "object",
-        "properties": {
-          "campus": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Campus"
-            }
-          },
-          "houseType": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/HouseType"
-            }
-          },
-          "facilities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Facility"
-            }
-          }
-        },
-        "required": [
-          "campus",
-          "houseType",
-          "facilities"
-        ]
-      },
-      "Rule": {
-        "type": "object",
-        "properties": {
-          "ruleId": {
-            "type": "number"
-          },
-          "content": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "ruleId",
-          "content"
-        ]
-      },
-      "Feature": {
-        "type": "object",
-        "properties": {
-          "featureId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "featureId",
-          "name"
-        ]
-      },
-      "Renting": {
-        "type": "object",
-        "properties": {
-          "rentingId": {
-            "type": "number"
-          },
-          "title": {
-            "type": "string"
-          },
-          "price": {
-            "type": "number"
-          },
-          "address": {
-            "type": "string"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "campus": {
-            "$ref": "#/components/schemas/Campus"
-          },
-          "houseType": {
-            "$ref": "#/components/schemas/HouseType"
-          },
-          "square": {
-            "type": "number"
-          },
-          "floor": {
-            "type": "number"
-          },
-          "totalFloor": {
-            "type": "number"
-          },
-          "description": {
-            "type": "string"
-          },
-          "rules": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Rule"
-            }
-          },
-          "facilities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Facility"
-            }
-          },
-          "features": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Feature"
-            }
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "landlord": {
-            "$ref": "#/components/schemas/Landlord"
-          },
-          "isRented": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "rentingId",
-          "title",
-          "price",
-          "address",
-          "images",
-          "campus",
-          "houseType",
-          "square",
-          "floor",
-          "totalFloor",
-          "description",
-          "rules",
-          "facilities",
-          "features",
-          "createdAt",
-          "landlord",
-          "isRented"
-        ]
       },
       "CreateRentingDto": {
         "type": "object",
@@ -1431,13 +1136,13 @@
           "features": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Feature"
+              "type": "object"
             }
           },
           "rules": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Rule"
+              "type": "object"
             }
           },
           "facilityIds": {
@@ -1448,60 +1153,6 @@
             }
           }
         }
-      },
-      "Favorite": {
-        "type": "object",
-        "properties": {
-          "favoriteId": {
-            "type": "number"
-          },
-          "studentId": {
-            "type": "number"
-          },
-          "rentingId": {
-            "type": "number"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "favoriteId",
-          "studentId",
-          "rentingId",
-          "createdAt"
-        ]
-      },
-      "Student": {
-        "type": "object",
-        "properties": {
-          "studentId": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "studentNumber": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "favorites": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Favorite"
-            }
-          }
-        },
-        "required": [
-          "studentId",
-          "name",
-          "studentNumber",
-          "phone",
-          "favorites"
-        ]
       },
       "UpdateStudentDto": {
         "type": "object",
