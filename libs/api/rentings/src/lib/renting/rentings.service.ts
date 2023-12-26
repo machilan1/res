@@ -18,7 +18,19 @@ import {
   rentingFacility,
   facility,
 } from '@res/api-database';
-import { SQLWrapper, and, desc, eq, inArray, isNull } from 'drizzle-orm';
+import {
+  SQLWrapper,
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNull,
+  notInArray,
+  param,
+  sql,
+} from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -28,25 +40,32 @@ import { Pagination } from './../../../../shared/helpers/pagination';
 export class RentingService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
-  async getRentings(params: GetRentingsParam): Promise<Pagination<Renting>> {
+  async getRentings(params: GetRentingsParam) {
+    // : Promise<Pagination<Renting>>
     let limit;
     let offset;
 
-    const conditions: SQLWrapper[] = [];
+    // const conditions: SQLWrapper[] = [];
 
-    if (params.houseTypeIds) {
-      conditions.push(inArray(houseType.houseTypeId, params.houseTypeIds));
-    }
+    // if (params.houseTypeIds) {
+    //   conditions.push(inArray(houseType.houseTypeId, params.houseTypeIds));
+    // }
 
-    if (params.campusIds) {
-      conditions.push(inArray(campus.campusId, params.campusIds));
-    }
+    // if (params.campusIds) {
+    //   conditions.push(inArray(campus.campusId, params.campusIds));
+    // }
 
-    conditions.push(isNull(renting.deletedAt));
+    // if (params.facilityIds) {
+    //   conditions.push();
+    // }
+
+    // conditions.push(isNull(renting.deletedAt));
 
     const countRes = await this.conn.query.renting.findMany({
       with: {
-        facilities: { with: { facility: true } },
+        facilities: {
+          where: notInArray(rentingFacility.facilityId, [1, 2, 3]),
+        },
         landlord: { with: { user: true } },
         features: true,
         campus: true,
@@ -55,6 +74,57 @@ export class RentingService {
       },
       where: and(...conditions),
     });
+
+    const subquery = this.conn
+      .select({
+        rentingId: rentingFacility.rentingId,
+      })
+      .from(rentingFacility)
+      .groupBy(rentingFacility.rentingId)
+      .$dynamic();
+
+    if (params.facilityIds) {
+      subquery.where(inArray(rentingFacility.facilityId, params.facilityIds));
+      subquery.having(eq(count(), params.facilityIds.length));
+    }
+
+    // const countRes3 = await subquery;
+    const countRes3 = this.conn
+      .select({ e04: sql`json_agg(${facility})` })
+      .from(renting)
+      .leftJoin(
+        rentingFacility,
+        eq(rentingFacility.rentingId, renting.rentingId),
+      )
+      .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
+      .leftJoin(campus, eq(campus.campusId, renting.campusId))
+      .leftJoin(houseType, eq(houseType.houseTypeId, renting.houseTypeId))
+      .where(inArray(renting.rentingId, subquery))
+      .groupBy(renting.rentingId)
+      .$dynamic();
+
+    // if (params.houseTypeIds) {
+    //   countRes3.where(inArray(houseType.houseTypeId, params.houseTypeIds));
+    // }
+
+    // if (params.campusIds) {
+    //   countRes3.where(inArray(campus.campusId, params.campusIds));
+    // }
+
+    console.log(await countRes3);
+    return countRes3;
+
+    // const countRes = await this.conn.query.renting.findMany({
+    //   with: {
+    //     facilities: { with: { facility: true } },
+    //     landlord: { with: { user: true } },
+    //     features: true,
+    //     campus: true,
+    //     rules: true,
+    //     houseType: true,
+    //   },
+    //   where: and(...conditions),
+    // });
 
     if (params.limit) {
       limit = params.limit > 100 ? 100 : params.limit;

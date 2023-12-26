@@ -25,6 +25,17 @@ export class GetRentingsParam {
   campusIds?: number[];
 
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return [parseInt(value)];
+    } else {
+      return value.map((entry) => parseInt(entry));
+    }
+  })
+  @IsPositive({ each: true })
+  facilityIds?: number[];
+
+  @IsOptional()
   @IsPositive()
   @Transform(({ value }) => (parseInt(value) > 100 ? 100 : parseInt(value)))
   limit?: number;

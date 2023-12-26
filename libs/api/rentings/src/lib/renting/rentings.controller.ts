@@ -29,9 +29,8 @@ export class RentingsController {
   @ApiBearerAuth()
   @Get()
   @ApiOperation({ operationId: 'getRentings' })
-  async getRentings(
-    @Query() params: GetRentingsParam,
-  ): Promise<PaginatedRentings> {
+  async getRentings(@Query() params: GetRentingsParam) {
+    // : Promise<PaginatedRentings>
     const res = await this.rentingService.getRentings(params);
     return res;
   }

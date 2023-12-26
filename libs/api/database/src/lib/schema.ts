@@ -222,7 +222,7 @@ export const rentingFacilityRelations = relations(
       fields: [rentingFacility.facilityId],
       references: [facility.facilityId],
     }),
-  })
+  }),
 );
 
 export const facility = pgTable('facility', {

@@ -449,6 +449,18 @@
             }
           },
           {
+            "name": "facilityIds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
             "name": "limit",
             "required": false,
             "in": "query",
@@ -469,14 +481,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaginatedRentings"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [
@@ -1394,38 +1399,6 @@
           "createdAt",
           "landlord",
           "isRented"
-        ]
-      },
-      "PaginatedRentings": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Renting"
-            }
-          },
-          "meta": {
-            "type": "object",
-            "properties": {
-              "limit": {
-                "required": true,
-                "type": "number"
-              },
-              "page": {
-                "required": true,
-                "type": "number"
-              },
-              "total": {
-                "required": true,
-                "type": "number"
-              }
-            }
-          }
-        },
-        "required": [
-          "data",
-          "meta"
         ]
       },
       "CreateRentingDto": {
