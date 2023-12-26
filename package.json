@@ -5,7 +5,8 @@
   "scripts": {
     "oai": "ng-openapi-gen --input openapi.json --output libs/shared/oai/src/lib --indexFile=true",
     "generate:migration": "npx drizzle-kit generate:pg --config=./libs/api/database/src/lib/config.ts",
-    "migrate": "npx tsx ./libs/api/database/src/lib/migrate.ts"
+    "migrate": "npx tsx ./libs/api/database/src/lib/migrate.ts",
+    "seed" : "npx tsx ./seed.ts"
   },
   "private": true,
   "dependencies": {
@@ -83,6 +84,7 @@
     "jest-environment-node": "^29.4.1",
     "jest-preset-angular": "~13.1.4",
     "jsonc-eslint-parser": "^2.1.0",
+    "ng-openapi-gen": "^0.51.0",
     "nx": "17.2.7",
     "postcss": "^8.4.5",
     "prettier": "^3.1.1",

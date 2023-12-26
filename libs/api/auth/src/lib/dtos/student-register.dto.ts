@@ -27,7 +27,7 @@ export class RegisterStudentDto {
   @Transform((params) => params.value.toLowerCase())
   studentNumber!: string;
 
-  @MaxLength(PASSWORD_MIN_LENGTH)
+  @MinLength(PASSWORD_MIN_LENGTH)
   @Matches(PASSWORD_REGEX)
   password!: string;
 }

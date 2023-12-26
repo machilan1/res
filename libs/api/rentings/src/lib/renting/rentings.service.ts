@@ -18,15 +18,20 @@ import {
   rentingFacility,
   facility,
 } from '@res/api-database';
-import { SQLWrapper, and, eq, inArray, isNull } from 'drizzle-orm';
+import { SQLWrapper, and, desc, eq, inArray, isNull } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { Pagination } from './../../../../shared/helpers/pagination';
 
 @Injectable()
 export class RentingService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
-  async getRentings(params: GetRentingsParam): Promise<Renting[]> {
+  async getRentings(params: GetRentingsParam): Promise<Pagination<Renting>> {
+    let limit;
+    let offset;
+
     const conditions: SQLWrapper[] = [];
 
     if (params.houseTypeIds) {
@@ -39,6 +44,37 @@ export class RentingService {
 
     conditions.push(isNull(renting.deletedAt));
 
+    const countRes = await this.conn.query.renting.findMany({
+      with: {
+        facilities: { with: { facility: true } },
+        landlord: { with: { user: true } },
+        features: true,
+        campus: true,
+        rules: true,
+        houseType: true,
+      },
+      where: and(...conditions),
+    });
+
+    if (params.limit) {
+      limit = params.limit > 100 ? 100 : params.limit;
+    } else {
+      limit = 20;
+    }
+
+    let page = params.page ? params.page : 0;
+
+    if (limit && page) {
+      if (limit * page > countRes.length) {
+        offset = countRes.length - limit;
+        page = Math.floor(countRes.length / limit);
+      } else {
+        offset = limit * page;
+      }
+    } else {
+      offset = 0;
+    }
+
     const res = await this.conn.query.renting.findMany({
       with: {
         facilities: { with: { facility: true } },
@@ -48,12 +84,13 @@ export class RentingService {
         rules: true,
         houseType: true,
       },
-      limit: params.limit,
-      offset: params.offset,
-      where: and(and(...conditions)),
+      limit: limit,
+      offset: offset,
+      where: and(...conditions),
+      orderBy: [desc(renting.createdAt)],
     });
 
-    return res.map(
+    const data = res.map(
       (entry) =>
         new Renting({
           ...entry,
@@ -72,8 +109,13 @@ export class RentingService {
             email: entry.landlord!.email,
             banned: entry.landlord!.banned,
           },
-        })
+        }),
     );
+
+    return {
+      data,
+      meta: { limit, page, total: countRes.length },
+    };
   }
 
   async getRentingById(rentingId: number): Promise<Renting> {
@@ -138,7 +180,10 @@ export class RentingService {
         floor,
         totalFloor,
         images,
-        landlordId,
+        landlordId:
+          process.env['ENV'] === 'dev'
+            ? 1 + Math.floor(Math.random() * 10)
+            : landlordId,
       })
       .returning();
 
@@ -152,7 +197,7 @@ export class RentingService {
             name: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -163,7 +208,7 @@ export class RentingService {
             content: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -174,7 +219,7 @@ export class RentingService {
             facilityId: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -191,7 +236,7 @@ export class RentingService {
   async updateRenting(
     updaterId: number,
     rentingId: number,
-    body: UpdateRentingDto
+    body: UpdateRentingDto,
   ) {
     const {
       campusId,
@@ -250,9 +295,9 @@ export class RentingService {
             .where(
               and(
                 eq(feature.featureId, entry.featureId),
-                eq(feature.rentingId, rentingId)
-              )
-            )
+                eq(feature.rentingId, rentingId),
+              ),
+            ),
         );
       });
     }
@@ -264,8 +309,8 @@ export class RentingService {
             .update(rule)
             .set(entry)
             .where(
-              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId))
-            )
+              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId)),
+            ),
         );
       });
     }

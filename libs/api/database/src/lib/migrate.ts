@@ -5,7 +5,7 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 
-async function main() {
+export async function main() {
   const env = dotenv.config();
   expand(env);
   console.log('Migration Start');

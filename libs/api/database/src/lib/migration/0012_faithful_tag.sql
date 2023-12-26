@@ -1,0 +1,1 @@
+ALTER TABLE "facility" ADD CONSTRAINT "facility_name_unique" UNIQUE("name");

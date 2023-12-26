@@ -30,7 +30,6 @@ export class Landlord {
   banned!: boolean;
 
   constructor(data: getLandlordsRes) {
-    console.log('---data', data);
     this.email = data.email;
     this.banned = data.banned;
     this.landlordId = data.userId;

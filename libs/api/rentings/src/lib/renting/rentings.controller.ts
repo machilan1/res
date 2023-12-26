@@ -18,6 +18,8 @@ import { CreateRentingDto } from './dtos/create-renting.dto';
 import { GetCurrentUser } from './../../../../shared/decorators/get-current-user.decorator';
 import { SelectRenting } from '@res/api-database';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
+import { Pagination } from 'libs/api/shared/helpers/pagination';
+import { PaginatedRentings } from './entity/paginated-rentings.entity';
 
 @ApiTags('rentings')
 @Controller('rentings')
@@ -27,7 +29,9 @@ export class RentingsController {
   @ApiBearerAuth()
   @Get()
   @ApiOperation({ operationId: 'getRentings' })
-  async getRentings(@Query() params: GetRentingsParam): Promise<Renting[]> {
+  async getRentings(
+    @Query() params: GetRentingsParam,
+  ): Promise<PaginatedRentings> {
     const res = await this.rentingService.getRentings(params);
     return res;
   }
@@ -35,7 +39,7 @@ export class RentingsController {
   @ApiBearerAuth()
   @Get(':rentingId')
   async getRentingById(
-    @Param('rentingId', ParseIntPipe) id: number
+    @Param('rentingId', ParseIntPipe) id: number,
   ): Promise<Renting> {
     const res = await this.rentingService.getRentingById(id);
 
@@ -50,11 +54,11 @@ export class RentingsController {
   async createRenting(
     @GetCurrentUser()
     user: { userId: number; role: string },
-    @Body() createRentingDto: CreateRentingDto
+    @Body() createRentingDto: CreateRentingDto,
   ): Promise<SelectRenting> {
     const res = await this.rentingService.createRenting(
       user.userId,
-      createRentingDto
+      createRentingDto,
     );
     return res;
   }
@@ -65,12 +69,12 @@ export class RentingsController {
     @GetCurrentUser()
     user: { userId: number; role: string },
     @Body() updateRentingDto: UpdateRentingDto,
-    @Param('rentingId', ParseIntPipe) rentingId: number
+    @Param('rentingId', ParseIntPipe) rentingId: number,
   ) {
     const res = await this.rentingService.updateRenting(
       user.userId,
       rentingId,
-      updateRentingDto
+      updateRentingDto,
     );
     return res;
   }

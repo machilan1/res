@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsOptional, IsPositive, Max, Min } from 'class-validator';
 
 export class GetRentingsParam {
   @IsOptional()
@@ -26,11 +26,11 @@ export class GetRentingsParam {
 
   @IsOptional()
   @IsPositive()
-  @Transform(({ value }) => parseInt(value))
+  @Transform(({ value }) => (parseInt(value) > 100 ? 100 : parseInt(value)))
   limit?: number;
 
   @IsOptional()
-  @IsPositive()
+  @Min(0)
   @Transform(({ value }) => parseInt(value))
-  offset?: number;
+  page?: number;
 }

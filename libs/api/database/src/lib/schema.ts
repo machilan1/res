@@ -94,17 +94,23 @@ export const adminRelations = relations(admin, ({ one }) => ({
 
 export const campus = pgTable('campus', {
   campusId: bigserial('campus_id', { mode: 'number' }).primaryKey().notNull(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectCampus = InferSelectModel<typeof campus>;
+export type InsertCampus = InferInsertModel<typeof campus>;
 
 export const houseType = pgTable('house_type', {
   houseTypeId: bigserial('house_type_id', { mode: 'number' })
     .primaryKey()
     .notNull(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectHouseType = InferSelectModel<typeof houseType>;
+export type InsertHouseType = InferInsertModel<typeof houseType>;
 
 export const rule = pgTable('rule', {
   ruleId: bigserial('rule_id', { mode: 'number' }).primaryKey().notNull(),
@@ -223,10 +229,13 @@ export const facility = pgTable('facility', {
   facilityId: bigserial('facility_id', { mode: 'number' })
     .notNull()
     .primaryKey(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   icon: text('icon').notNull(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectFacility = InferSelectModel<typeof facility>;
+export type InsertFacility = InferInsertModel<typeof facility>;
 
 export const feature = pgTable('feature', {
   featureId: bigserial('feature_id', { mode: 'number' }).notNull().primaryKey(),
