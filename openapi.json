@@ -625,7 +625,8 @@
     },
     "/students": {
       "get": {
-        "operationId": "StudentsController_getStudents",
+        "operationId": "getStudents",
+        "summary": "",
         "parameters": [],
         "responses": {
           "200": {
@@ -654,7 +655,8 @@
     },
     "/students/{studentId}": {
       "get": {
-        "operationId": "StudentsController_getStudentById",
+        "operationId": "getStudentById",
+        "summary": "",
         "parameters": [
           {
             "name": "studentId",
@@ -672,6 +674,84 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Student"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateStudent",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
                 }
               }
             }
@@ -1422,6 +1502,19 @@
           "phone",
           "favorites"
         ]
+      },
+      "UpdateStudentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        }
       }
     }
   }

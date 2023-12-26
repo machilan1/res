@@ -16,6 +16,7 @@ import {
   feature,
   rule,
   rentingFacility,
+  facility,
 } from '@res/api-database';
 import { SQLWrapper, and, eq, inArray, isNull } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
@@ -49,7 +50,7 @@ export class RentingService {
       },
       limit: params.limit,
       offset: params.offset,
-      where: and(...conditions),
+      where: and(and(...conditions)),
     });
 
     return res.map(

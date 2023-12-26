@@ -1,10 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateStudentDto } from './dtos/create-student.dto';
-import { updateStudentDto } from './dtos/update-student.dto';
-import { PG_CONNECTION, Database, student } from '@res/api-database';
+import { PG_CONNECTION, Database, student, user } from '@res/api-database';
 import { and, eq, isNull } from 'drizzle-orm';
 import { Student } from './entity/students.entity';
-import { NotFoundError } from 'rxjs';
+import { UpdateStudentDto } from './dtos/update-student.dto';
 
 @Injectable()
 export class StudentService {
@@ -47,11 +45,33 @@ export class StudentService {
     });
   }
 
-  // updateStudent(studentId: string, body: updateStudentDto) {
-  //   return `Update student with id ${studentId} with body ${body}`;
-  // }
+  async updateStudent(
+    studentId: number,
+    body: UpdateStudentDto
+  ): Promise<string> {
+    const { name, phone } = body;
 
-  // deleteStudent(studentId: string) {
-  //   return `Delete student with id ${studentId}`;
-  // }
+    if (name || phone) {
+      await this.conn
+        .update(user)
+        .set({ name, phone })
+        .where(and(eq(user.userId, studentId)));
+    }
+
+    return 'Student updated';
+  }
+
+  async deleteStudent(studentId: number) {
+    const res = await this.conn
+      .update(student)
+      .set({ deletedAt: new Date() })
+      .where(and(eq(student.userId, studentId), isNull(student.deletedAt)))
+      .returning();
+
+    if (!res || res.length < 1) {
+      throw new NotFoundException();
+    }
+
+    return 'Deleted';
+  }
 }
