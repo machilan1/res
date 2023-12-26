@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/auth/register": {
+    "/auth/register-student": {
       "post": {
-        "operationId": "register",
+        "operationId": "registerStudent",
         "summary": "",
         "parameters": [],
         "requestBody": {
@@ -11,13 +11,664 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StudentRegisterDto"
+                "$ref": "#/components/schemas/RegisterStudentDto"
               }
             }
           }
         },
         "responses": {
           "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/student-login": {
+      "post": {
+        "operationId": "studentLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register-landlord": {
+      "post": {
+        "operationId": "registerLandlord",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterLandlordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/landlord-login": {
+      "post": {
+        "operationId": "landlordLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LandlordLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register-admin": {
+      "post": {
+        "operationId": "registerAdmin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/admin-login": {
+      "post": {
+        "operationId": "adminLogin",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/files/upload": {
+      "post": {
+        "operationId": "uploadFile",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "files"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/landlords": {
+      "get": {
+        "operationId": "getLandlords",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Landlord"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/landlords/{landlordId}": {
+      "get": {
+        "operationId": "getLandlordById",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Landlord"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateLandlord",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLandlordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteLandlord",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "landlordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "landlords"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/filter-options": {
+      "get": {
+        "operationId": "getFilterOptions",
+        "summary": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterOption"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "filter-options"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/rentings": {
+      "get": {
+        "operationId": "getRentings",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "houseTypeIds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "campusIds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Renting"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "RentingsController_createRenting",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRentingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/rentings/{rentingId}": {
+      "get": {
+        "operationId": "RentingsController_getRentingById",
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Renting"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "RentingsController_updateRenting",
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRentingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RentingsController_deleteRenting",
+        "parameters": [
+          {
+            "name": "rentingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "rentings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/students": {
+      "get": {
+        "operationId": "getStudents",
+        "summary": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Student"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/students/{studentId}": {
+      "get": {
+        "operationId": "getStudentById",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
@@ -29,7 +680,90 @@
           }
         },
         "tags": [
-          "auth"
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateStudent",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "students"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     }
@@ -51,87 +785,736 @@
       }
     },
     "schemas": {
-      "StudentRegisterDto": {
+      "RegisterStudentDto": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
           },
           "phone": {
-            "type": "string"
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
           },
           "studentNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 9,
+            "pattern": "STUDENT_NUMBER_REGEX"
           },
           "password": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "departmentId": {
-            "type": "number"
-          },
-          "majorId": {
-            "type": "number"
-          },
-          "year": {
-            "type": "number"
+            "type": "string",
+            "maxLength": 6,
+            "pattern": "PASSWORD_REGEX"
           }
         },
         "required": [
           "name",
           "phone",
           "studentNumber",
-          "email",
-          "password",
-          "role",
-          "departmentId",
-          "majorId",
-          "year"
+          "password"
         ]
       },
-      "Student": {
+      "Tokens": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "number"
-          },
-          "studentNumber": {
+          "at": {
             "type": "string"
           },
+          "rt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "at",
+          "rt"
+        ]
+      },
+      "StudentLoginDto": {
+        "type": "object",
+        "properties": {
+          "studentNumber": {
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 9,
+            "pattern": "STUDENT_NUMBER_REGEX"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
+          "studentNumber",
+          "password"
+        ]
+      },
+      "ContactTime": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ]
+      },
+      "RegisterLandlordDto": {
+        "type": "object",
+        "properties": {
           "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "contactTime": {
+            "$ref": "#/components/schemas/ContactTime"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "email",
+          "password",
+          "contactTime"
+        ]
+      },
+      "LandlordLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RegisterAdminDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "password",
+          "email"
+        ]
+      },
+      "AdminLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "PASSWORD_REGEX"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UploadResponse": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "RentingRes": {
+        "type": "object",
+        "properties": {
+          "rentingId": {
+            "type": "number"
+          },
+          "houseTypeId": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "landlordId": {
+            "type": "number",
+            "nullable": true
+          },
+          "campusId": {
+            "type": "number",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "isRented": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentingId",
+          "houseTypeId",
+          "createdAt",
+          "landlordId",
+          "campusId",
+          "address",
+          "price",
+          "title",
+          "images",
+          "square",
+          "floor",
+          "totalFloor",
+          "isRented"
+        ]
+      },
+      "Landlord": {
+        "type": "object",
+        "properties": {
+          "rentings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentingRes"
+            }
+          },
+          "landlordId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
             "type": "string"
           },
           "email": {
             "type": "string"
           },
-          "department": {
-            "type": "string"
-          },
-          "major": {
-            "type": "string"
-          },
-          "year": {
+          "startTime": {
             "type": "number"
           },
-          "role": {
+          "endTime": {
+            "type": "number"
+          },
+          "banned": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentings",
+          "landlordId",
+          "name",
+          "phone",
+          "email",
+          "startTime",
+          "endTime",
+          "banned"
+        ]
+      },
+      "UpdateLandlordDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20,
+            "pattern": "PHONE_REGEX"
+          },
+          "email": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
+          },
+          "contactTime": {
+            "$ref": "#/components/schemas/ContactTime"
+          }
+        }
+      },
+      "Campus": {
+        "type": "object",
+        "properties": {
+          "campusId": {
+            "type": "number"
+          },
+          "name": {
             "type": "string"
           }
         },
         "required": [
-          "userId",
-          "studentNumber",
-          "name",
-          "email",
-          "department",
-          "major",
-          "year",
-          "role"
+          "campusId",
+          "name"
         ]
+      },
+      "HouseType": {
+        "type": "object",
+        "properties": {
+          "houseTypeId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "houseTypeId",
+          "name"
+        ]
+      },
+      "Facility": {
+        "type": "object",
+        "properties": {
+          "facilityId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "facilityId",
+          "name",
+          "icon"
+        ]
+      },
+      "FilterOption": {
+        "type": "object",
+        "properties": {
+          "campus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Campus"
+            }
+          },
+          "houseType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HouseType"
+            }
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Facility"
+            }
+          }
+        },
+        "required": [
+          "campus",
+          "houseType",
+          "facilities"
+        ]
+      },
+      "Rule": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "number"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ruleId",
+          "content"
+        ]
+      },
+      "Feature": {
+        "type": "object",
+        "properties": {
+          "featureId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "featureId",
+          "name"
+        ]
+      },
+      "Renting": {
+        "type": "object",
+        "properties": {
+          "rentingId": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "address": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "campus": {
+            "$ref": "#/components/schemas/Campus"
+          },
+          "houseType": {
+            "$ref": "#/components/schemas/HouseType"
+          },
+          "square": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "totalFloor": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            }
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Facility"
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "landlord": {
+            "$ref": "#/components/schemas/Landlord"
+          },
+          "isRented": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rentingId",
+          "title",
+          "price",
+          "address",
+          "images",
+          "campus",
+          "houseType",
+          "square",
+          "floor",
+          "totalFloor",
+          "description",
+          "rules",
+          "facilities",
+          "features",
+          "createdAt",
+          "landlord",
+          "isRented"
+        ]
+      },
+      "CreateRentingDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "houseTypeId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "campusId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "price": {
+            "type": "number",
+            "minimum": 1
+          },
+          "square": {
+            "type": "number",
+            "minimum": 1
+          },
+          "floor": {
+            "type": "number",
+            "minimum": 1
+          },
+          "totalFloor": {
+            "type": "number",
+            "minimum": 1
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "facilityIds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "houseTypeId",
+          "campusId",
+          "address",
+          "price",
+          "square",
+          "floor",
+          "totalFloor"
+        ]
+      },
+      "UpdateRentingDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "typeId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "campusId": {
+            "type": "number",
+            "minimum": 1
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "price": {
+            "type": "number",
+            "minimum": 1
+          },
+          "square": {
+            "type": "number",
+            "minimum": 1
+          },
+          "floor": {
+            "type": "number",
+            "minimum": 1
+          },
+          "totalFloor": {
+            "type": "number",
+            "minimum": 1
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            }
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            }
+          },
+          "facilityIds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        }
+      },
+      "Favorite": {
+        "type": "object",
+        "properties": {
+          "favoriteId": {
+            "type": "number"
+          },
+          "studentId": {
+            "type": "number"
+          },
+          "rentingId": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "favoriteId",
+          "studentId",
+          "rentingId",
+          "createdAt"
+        ]
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "studentNumber": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "favorites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Favorite"
+            }
+          }
+        },
+        "required": [
+          "studentId",
+          "name",
+          "studentNumber",
+          "phone",
+          "favorites"
+        ]
+      },
+      "UpdateStudentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        }
       }
     }
   }

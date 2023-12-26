@@ -5,7 +5,6 @@
 
 import {
   ClassSerializerInterceptor,
-  ConsoleLogger,
   Logger,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as fs from 'fs';
 import { join } from 'path';
+import { TrimPipe } from '@res/shared';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -31,6 +31,8 @@ async function bootstrap() {
     .build();
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new TrimPipe());
+
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const document = SwaggerModule.createDocument(app, config);

@@ -24,7 +24,9 @@ export class JwtGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
+
     const token = this.extractTokenFromHeader(request);
+
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -33,7 +35,6 @@ export class JwtGuard implements CanActivate {
         secret: process.env['JWT_SECRET'],
       });
       request['user'] = payload;
-      console.log(payload);
     } catch {
       throw new UnauthorizedException();
     }
