@@ -20,7 +20,7 @@ import {
   landlord,
   user,
 } from '@res/api-database';
-import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, param, sql } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -56,6 +56,10 @@ export class RentingService {
     }
 
     const subRes = await subquery;
+
+    if (!subRes || subRes.length === 0) {
+      return { data: [], meta: { limit: 0, page: 0, total: 0 } };
+    }
 
     const filteredRentingIds = subRes.map((entry) => entry.rentingId);
 
