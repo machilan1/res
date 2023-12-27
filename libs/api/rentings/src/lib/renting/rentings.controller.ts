@@ -30,8 +30,8 @@ export class RentingsController {
   @Get()
   @ApiOperation({ operationId: 'getRentings' })
   async getRentings(@Query() params: GetRentingsParam) {
-    // : Promise<PaginatedRentings>
     const res = await this.rentingService.getRentings(params);
+
     return res;
   }
 

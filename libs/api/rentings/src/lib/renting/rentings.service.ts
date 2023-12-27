@@ -17,80 +17,56 @@ import {
   rule,
   rentingFacility,
   facility,
+  landlord,
+  user,
 } from '@res/api-database';
-import {
-  SQLWrapper,
-  and,
-  count,
-  desc,
-  eq,
-  gte,
-  inArray,
-  isNull,
-  notInArray,
-  param,
-  sql,
-} from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { Pagination } from './../../../../shared/helpers/pagination';
+import { Pagination } from 'libs/api/shared/helpers/pagination';
+import { Rule } from './entity/rule.entity';
+import { Campus } from './entity/campus.entity';
+import { HouseType } from './entity/type.entity';
+import { Facility } from './entity/facility.entity';
+import { Feature } from './entity/feature.entity';
+import { Landlord } from './entity/landlord.entity';
 
 @Injectable()
 export class RentingService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
-  async getRentings(params: GetRentingsParam) {
-    // : Promise<Pagination<Renting>>
+  async getRentings(params: GetRentingsParam): Promise<Pagination<Renting>> {
     let limit;
     let offset;
-
-    // const conditions: SQLWrapper[] = [];
-
-    // if (params.houseTypeIds) {
-    //   conditions.push(inArray(houseType.houseTypeId, params.houseTypeIds));
-    // }
-
-    // if (params.campusIds) {
-    //   conditions.push(inArray(campus.campusId, params.campusIds));
-    // }
-
-    // if (params.facilityIds) {
-    //   conditions.push();
-    // }
-
-    // conditions.push(isNull(renting.deletedAt));
-
-    const countRes = await this.conn.query.renting.findMany({
-      with: {
-        facilities: {
-          where: notInArray(rentingFacility.facilityId, [1, 2, 3]),
-        },
-        landlord: { with: { user: true } },
-        features: true,
-        campus: true,
-        rules: true,
-        houseType: true,
-      },
-      where: and(...conditions),
-    });
 
     const subquery = this.conn
       .select({
         rentingId: rentingFacility.rentingId,
+        count: count(),
       })
       .from(rentingFacility)
       .groupBy(rentingFacility.rentingId)
       .$dynamic();
 
     if (params.facilityIds) {
-      subquery.where(inArray(rentingFacility.facilityId, params.facilityIds));
-      subquery.having(eq(count(), params.facilityIds.length));
+      subquery
+        .where(inArray(rentingFacility.facilityId, params.facilityIds))
+        .having(eq(count(), params.facilityIds.length));
     }
 
-    // const countRes3 = await subquery;
-    const countRes3 = this.conn
-      .select({ e04: sql`json_agg(${facility})` })
+    const subRes = await subquery;
+
+    console.log(subRes);
+
+    const awd = subRes.map((entry) => entry.rentingId);
+
+    console.log(awd);
+
+    const countRes = this.conn
+      .select({
+        facilities: sql`json_agg(${facility})`,
+      })
       .from(renting)
       .leftJoin(
         rentingFacility,
@@ -99,32 +75,27 @@ export class RentingService {
       .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
       .leftJoin(campus, eq(campus.campusId, renting.campusId))
       .leftJoin(houseType, eq(houseType.houseTypeId, renting.houseTypeId))
-      .where(inArray(renting.rentingId, subquery))
       .groupBy(renting.rentingId)
       .$dynamic();
 
-    // if (params.houseTypeIds) {
-    //   countRes3.where(inArray(houseType.houseTypeId, params.houseTypeIds));
-    // }
+    const filter = [];
 
-    // if (params.campusIds) {
-    //   countRes3.where(inArray(campus.campusId, params.campusIds));
-    // }
+    filter.push(inArray(renting.rentingId, awd));
 
-    console.log(await countRes3);
-    return countRes3;
+    if (params.houseTypeIds) {
+      filter.push(inArray(houseType.houseTypeId, params.houseTypeIds));
+    }
 
-    // const countRes = await this.conn.query.renting.findMany({
-    //   with: {
-    //     facilities: { with: { facility: true } },
-    //     landlord: { with: { user: true } },
-    //     features: true,
-    //     campus: true,
-    //     rules: true,
-    //     houseType: true,
-    //   },
-    //   where: and(...conditions),
-    // });
+    if (params.campusIds) {
+      filter.push(inArray(campus.campusId, params.campusIds));
+    }
+
+    const zxc = await countRes.where(and(...filter));
+
+    const filteredCount = zxc.length;
+
+    console.log(await countRes);
+    console.log(filteredCount);
 
     if (params.limit) {
       limit = params.limit > 100 ? 100 : params.limit;
@@ -135,9 +106,9 @@ export class RentingService {
     let page = params.page ? params.page : 0;
 
     if (limit && page) {
-      if (limit * page > countRes.length) {
-        offset = countRes.length - limit;
-        page = Math.floor(countRes.length / limit);
+      if (limit * page > filteredCount) {
+        page = Math.floor(filteredCount / limit);
+        offset = limit * page;
       } else {
         offset = limit * page;
       }
@@ -145,47 +116,75 @@ export class RentingService {
       offset = 0;
     }
 
-    const res = await this.conn.query.renting.findMany({
-      with: {
-        facilities: { with: { facility: true } },
-        landlord: { with: { user: true } },
-        features: true,
-        campus: true,
-        rules: true,
-        houseType: true,
-      },
-      limit: limit,
-      offset: offset,
-      where: and(...conditions),
-      orderBy: [desc(renting.createdAt)],
-    });
+    const dataRes = this.conn
+      .select({
+        rentingId: renting.rentingId,
+        title: renting.title,
+        price: renting.price,
+        address: renting.address,
+        images: renting.images,
+        campus: sql<Campus>` jsonb_build_object('campusId',${campus.campusId},'name',${campus.name})`,
+        // campus: { campusId: campus.campusId, name: campus.name },
+        houseType: sql<HouseType>` jsonb_build_object('houseTypeId',${houseType.houseTypeId},'name',${houseType.name})`,
+        // houseType: {
+        //   houseTypeId: houseType.houseTypeId,
+        //   name: houseType.name,
+        // },
+        square: renting.square,
+        floor: renting.floor,
+        totalFloor: renting.totalFloor,
+        description: renting.description,
+        rules: sql<
+          Rule[]
+        >`json_agg( DISTINCT  jsonb_build_object('content',${rule.content},'ruleId',${rule.ruleId}) )`,
+        facilities: sql<Facility[]>`json_agg(${facility})`,
+        features: sql<Feature[]>`json_agg(DISTINCT ${feature})`,
+        createdAt: renting.createdAt,
+        landlord: sql<Landlord>`jsonb_build_object('landlordId',${landlord.userId},'name',${user.name},'phone',${user.phone},'email',${landlord.email},'startTime',${landlord.contactTime} ->> 'start' ,'endTime',${landlord.contactTime} ->>'end','banned',${landlord.banned})`,
+        isRented: renting.isRented,
+      })
+      .from(renting)
+      .leftJoin(
+        rentingFacility,
+        eq(rentingFacility.rentingId, renting.rentingId),
+      )
+      .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
+      .leftJoin(campus, eq(campus.campusId, renting.campusId))
+      .leftJoin(houseType, eq(houseType.houseTypeId, renting.houseTypeId))
+      .leftJoin(rule, eq(rule.rentingId, renting.rentingId))
+      .leftJoin(landlord, eq(landlord.userId, renting.landlordId))
+      .leftJoin(user, eq(user.userId, landlord.userId))
+      .leftJoin(feature, eq(feature.rentingId, renting.rentingId))
+      .orderBy(desc(renting.createdAt))
+      .groupBy(
+        renting.rentingId,
+        campus.campusId,
+        houseType.houseTypeId,
+        landlord.userId,
+        user.userId,
+      )
+      .limit(limit)
+      .offset(offset)
+      .$dynamic();
 
-    const data = res.map(
-      (entry) =>
+    const filteredData = dataRes.where(and(...filter));
+
+    const xcv = await filteredData;
+
+    xcv.map(
+      (x) =>
         new Renting({
-          ...entry,
-          campus: entry.campus!,
-          facilities: entry.facilities.map((entry) => ({
-            facilityId: entry.facilityId,
-            icon: entry.facility.icon,
-            name: entry.facility.name,
-          })),
-          landlord: {
-            landlordId: entry.landlord!.userId,
-            name: entry.landlord!.user.name,
-            startTime: entry.landlord!.contactTime!.start,
-            endTime: entry.landlord!.contactTime!.end,
-            phone: entry.landlord!.user.phone,
-            email: entry.landlord!.email,
-            banned: entry.landlord!.banned,
-          },
+          ...x,
+          campus: x.campus!,
+          houseType: x.houseType!,
+          landlord: x.landlord!,
         }),
     );
+    return { data: xcv, meta: { limit, page, total: filteredCount } };
 
-    return {
-      data,
-      meta: { limit, page, total: countRes.length },
-    };
+    // dataRes.where(and(...filter));
+
+    // return await dataRes;
   }
 
   async getRentingById(rentingId: number): Promise<Renting> {
