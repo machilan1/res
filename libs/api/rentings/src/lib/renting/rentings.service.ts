@@ -57,11 +57,7 @@ export class RentingService {
 
     const subRes = await subquery;
 
-    console.log(subRes);
-
-    const awd = subRes.map((entry) => entry.rentingId);
-
-    console.log(awd);
+    const filteredRentingIds = subRes.map((entry) => entry.rentingId);
 
     const countRes = this.conn
       .select({
@@ -80,7 +76,7 @@ export class RentingService {
 
     const filter = [];
 
-    filter.push(inArray(renting.rentingId, awd));
+    filter.push(inArray(renting.rentingId, filteredRentingIds));
 
     if (params.houseTypeIds) {
       filter.push(inArray(houseType.houseTypeId, params.houseTypeIds));
@@ -90,12 +86,9 @@ export class RentingService {
       filter.push(inArray(campus.campusId, params.campusIds));
     }
 
-    const zxc = await countRes.where(and(...filter));
+    const afterFiltered = await countRes.where(and(...filter));
 
-    const filteredCount = zxc.length;
-
-    console.log(await countRes);
-    console.log(filteredCount);
+    const filteredCount = afterFiltered.length;
 
     if (params.limit) {
       limit = params.limit > 100 ? 100 : params.limit;
@@ -124,12 +117,7 @@ export class RentingService {
         address: renting.address,
         images: renting.images,
         campus: sql<Campus>` jsonb_build_object('campusId',${campus.campusId},'name',${campus.name})`,
-        // campus: { campusId: campus.campusId, name: campus.name },
         houseType: sql<HouseType>` jsonb_build_object('houseTypeId',${houseType.houseTypeId},'name',${houseType.name})`,
-        // houseType: {
-        //   houseTypeId: houseType.houseTypeId,
-        //   name: houseType.name,
-        // },
         square: renting.square,
         floor: renting.floor,
         totalFloor: renting.totalFloor,
