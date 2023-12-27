@@ -1,0 +1,1 @@
+ALTER TABLE "renting_record" DROP COLUMN IF EXISTS "action";

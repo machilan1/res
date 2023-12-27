@@ -15,6 +15,7 @@ import { StudentsModule } from '@res/api-students';
 import { ApiCampusModule } from '@res/api-campus';
 import { ApiHouseTypeModule } from '@res/api-house-type';
 import { ApiFacilitiesModule } from '@res/api-facilities';
+import { ApiRentingRecordsModule } from '@res/api-renting-records';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ApiFacilitiesModule } from '@res/api-facilities';
     ApiCampusModule,
     ApiHouseTypeModule,
     ApiFacilitiesModule,
+    ApiRentingRecordsModule,
     JwtModule.register({
       global: true,
       secret: process.env['JWT_SECRET'],

@@ -864,6 +864,72 @@
           "facilities"
         ]
       }
+    },
+    "/renting-records": {
+      "post": {
+        "operationId": "createRentingRecord",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRentingRecordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentingRecord"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "renting-records"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/renting-records/{rentingRecordId}": {
+      "delete": {
+        "operationId": "deleteRentingRecord",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "rentingRecordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "renting-records"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "info": {
@@ -1649,6 +1715,45 @@
         "required": [
           "name",
           "icon"
+        ]
+      },
+      "CreateRentingRecordDto": {
+        "type": "object",
+        "properties": {
+          "rentingId": {
+            "type": "number"
+          },
+          "studentId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rentingId",
+          "studentId"
+        ]
+      },
+      "RentingRecord": {
+        "type": "object",
+        "properties": {
+          "rentingRecordId": {
+            "type": "number"
+          },
+          "rentingId": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "studentId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rentingRecordId",
+          "rentingId",
+          "createdAt",
+          "studentId"
         ]
       }
     }

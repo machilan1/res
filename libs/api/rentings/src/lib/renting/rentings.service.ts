@@ -160,22 +160,18 @@ export class RentingService {
 
     const filteredData = dataRes.where(and(...filter));
 
-    const xcv = await filteredData;
+    const filteredRes = await filteredData;
 
-    xcv.map(
-      (x) =>
+    filteredRes.map(
+      (entry) =>
         new Renting({
-          ...x,
-          campus: x.campus!,
-          houseType: x.houseType!,
-          landlord: x.landlord!,
+          ...entry,
+          campus: entry.campus!,
+          houseType: entry.houseType!,
+          landlord: entry.landlord!,
         }),
     );
-    return { data: xcv, meta: { limit, page, total: filteredCount } };
-
-    // dataRes.where(and(...filter));
-
-    // return await dataRes;
+    return { data: filteredRes, meta: { limit, page, total: filteredCount } };
   }
 
   async getRentingById(rentingId: number): Promise<Renting> {

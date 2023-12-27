@@ -176,6 +176,7 @@ export const rentingRelations = relations(renting, ({ one, many }) => ({
     references: [campus.campusId],
   }),
   rules: many(rule),
+  rentingRecords: many(rentingRecord),
 }));
 
 export const rentingRecord = pgTable('renting_record', {
@@ -191,9 +192,18 @@ export const rentingRecord = pgTable('renting_record', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  action: recordActionEnum('action').notNull(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export type SelectRentingRecord = InferSelectModel<typeof rentingRecord>;
+export type InsertRentingRecord = InferInsertModel<typeof rentingRecord>;
+
+export const rentingRecordRelations = relations(rentingRecord, ({ one }) => ({
+  renting: one(renting, {
+    fields: [rentingRecord.rentingId],
+    references: [renting.rentingId],
+  }),
+}));
 
 export const rentingFacility = pgTable('renting_facility', {
   rentingFacilityId: bigserial('renting_facility_id', { mode: 'number' })
