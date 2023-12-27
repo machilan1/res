@@ -99,8 +99,11 @@ export class RentingService {
     let page = params.page ? params.page : 0;
 
     if (limit && page) {
-      if (limit * page > filteredCount) {
-        page = Math.floor(filteredCount / limit);
+      if (limit * (page + 1) > filteredCount) {
+        page =
+          filteredCount % limit === 0
+            ? Math.floor(filteredCount / limit) - 1
+            : Math.floor(filteredCount / limit);
         offset = limit * page;
       } else {
         offset = limit * page;
