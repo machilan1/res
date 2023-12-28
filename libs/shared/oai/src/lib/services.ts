@@ -7,3 +7,4 @@ export { StudentsService } from './services/students.service';
 export { CampusService } from './services/campus.service';
 export { HouseTypeService } from './services/house-type.service';
 export { FacilitiesService } from './services/facilities.service';
+export { RentingRecordsService } from './services/renting-records.service';

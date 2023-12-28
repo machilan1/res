@@ -6,15 +6,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { CreateHouseTypeDto } from '../../models/create-house-type-dto';
-import { HouseType } from '../../models/house-type';
+import { CreateRentingRecordDto } from '../../models/create-renting-record-dto';
+import { RentingRecord } from '../../models/renting-record';
 
-export interface CreateHouseType$Params {
-      body: CreateHouseTypeDto
+export interface CreateRentingRecord$Params {
+      body: CreateRentingRecordDto
 }
 
-export function createHouseType(http: HttpClient, rootUrl: string, params: CreateHouseType$Params, context?: HttpContext): Observable<StrictHttpResponse<HouseType>> {
-  const rb = new RequestBuilder(rootUrl, createHouseType.PATH, 'post');
+export function createRentingRecord(http: HttpClient, rootUrl: string, params: CreateRentingRecord$Params, context?: HttpContext): Observable<StrictHttpResponse<RentingRecord>> {
+  const rb = new RequestBuilder(rootUrl, createRentingRecord.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -24,9 +24,9 @@ export function createHouseType(http: HttpClient, rootUrl: string, params: Creat
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<HouseType>;
+      return r as StrictHttpResponse<RentingRecord>;
     })
   );
 }
 
-createHouseType.PATH = '/house-type';
+createRentingRecord.PATH = '/renting-records';

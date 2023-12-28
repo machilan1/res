@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
-export interface Favorite {
+export interface RentingRecord {
   createdAt: string;
-  favoriteId: number;
   rentingId: number;
+  rentingRecordId: number;
   studentId: number;
 }

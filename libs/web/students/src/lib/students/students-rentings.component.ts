@@ -10,6 +10,7 @@ import { RentingCardComponent } from '@res/renting';
         <div class="hover:shadow-lg">
           <res-renting-card
             [renting]="renting"
+            [id]="renting.id"
             [canEdit]="false"
           ></res-renting-card>
         </div>

@@ -10,7 +10,7 @@ import {
 
 const AUTH_HEADER = {
   Authorization:
-    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM1LCJyb2xlIjoibGFuZGxvcmQiLCJpYXQiOjE3MDM1OTc2NzgsImV4cCI6MTcwMzYwMTI3OH0.Jkl5ckFj3IIcWy0Iix_ez1zDVMWZjYvxpegur9Hb5nE',
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInJvbGUiOiJsYW5kbG9yZCIsImlhdCI6MTcwMzcwNjI3NiwiZXhwIjoxNzAzNzA5ODc2fQ.6Qq4aLtrllLsm5NRYTeW3haaVNGF6CPo77C-K0zx7nc',
 };
 
 const HOUSE_TYPES = ['套房', '雅房', '家庭式'];
@@ -39,15 +39,19 @@ const STUDENT_COUNT = 30;
 const LANDLORD_COUNT = 10;
 const ADMIN_COUNT = 1;
 const RENTING_COUNT = 100;
+
 async function main() {
   console.log('Seeding starts');
-  await seedHouseType(HOUSE_TYPES);
-  await seedCampus(CAMPUSES);
-  await seedFacility(FACILITIES);
-  await seedLandlord(LANDLORD_COUNT);
+
+  // await seedHouseType(HOUSE_TYPES);
+  // await seedCampus(CAMPUSES);
+  // await seedFacility(FACILITIES);
+  // await seedLandlord(LANDLORD_COUNT);
+
   await seedStudent(STUDENT_COUNT);
   await seedAdmin(ADMIN_COUNT);
   await seedRentings(RENTING_COUNT);
+
   await console.log('Seeding completes');
 }
 
@@ -213,6 +217,7 @@ async function seedRentings(count) {
 
   console.log('Seeding rentings completed');
 }
+
 // utilities
 
 function pad(num: number) {

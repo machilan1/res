@@ -7,14 +7,14 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 
-export interface RentingsControllerDeleteRenting$Params {
-  rentingId: number;
+export interface DeleteRentingRecord$Params {
+  rentingRecordId: number;
 }
 
-export function rentingsControllerDeleteRenting(http: HttpClient, rootUrl: string, params: RentingsControllerDeleteRenting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, rentingsControllerDeleteRenting.PATH, 'delete');
+export function deleteRentingRecord(http: HttpClient, rootUrl: string, params: DeleteRentingRecord$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, deleteRentingRecord.PATH, 'delete');
   if (params) {
-    rb.path('rentingId', params.rentingId, {});
+    rb.path('rentingRecordId', params.rentingRecordId, {});
   }
 
   return http.request(
@@ -27,4 +27,4 @@ export function rentingsControllerDeleteRenting(http: HttpClient, rootUrl: strin
   );
 }
 
-rentingsControllerDeleteRenting.PATH = '/rentings/{rentingId}';
+deleteRentingRecord.PATH = '/renting-records/{rentingRecordId}';

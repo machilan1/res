@@ -13,6 +13,7 @@ import { StudentsService } from './services/students.service';
 import { CampusService } from './services/campus.service';
 import { HouseTypeService } from './services/house-type.service';
 import { FacilitiesService } from './services/facilities.service';
+import { RentingRecordsService } from './services/renting-records.service';
 
 /**
  * Module that provides all services and configuration.
@@ -31,6 +32,7 @@ import { FacilitiesService } from './services/facilities.service';
     CampusService,
     HouseTypeService,
     FacilitiesService,
+    RentingRecordsService,
     ApiConfiguration
   ],
 })

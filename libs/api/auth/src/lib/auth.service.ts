@@ -49,6 +49,7 @@ export class AuthService {
         .insert(user)
         .values({ name, password: hashedPassword, phone, role: 'student' })
         .returning();
+      console.log('---transaction', studentNumber, studentNumber);
 
       try {
         await tx

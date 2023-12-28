@@ -1,11 +1,21 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { RentingCardComponent } from '@res/renting';
 
 @Component({
   selector: 'res-landlord-rentings',
   standalone: true,
   template: `
-    <div class="flex flex-col gap-4">
+    <div class="w-full flex justify-end">
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        routerLink="/renting/new/edit"
+      >
+        新增租屋
+      </button>
+    </div>
+    <div class="flex flex-col gap-4 pt-4">
       @for (renting of rentings; track renting.id) {
         <div class="hover:shadow-lg">
           <res-renting-card
@@ -18,7 +28,7 @@ import { RentingCardComponent } from '@res/renting';
     </div>
   `,
   styles: [``],
-  imports: [RentingCardComponent],
+  imports: [RentingCardComponent, RouterLink],
 })
 export class LandlordRentingsComponent {
   rentings = [
