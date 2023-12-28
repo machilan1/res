@@ -257,7 +257,6 @@ export const feature = pgTable('feature', {
 });
 
 export const featureRelations = relations(feature, ({ one }) => ({
-  // Todo : check this part
   user: one(renting, {
     fields: [feature.rentingId],
     references: [renting.rentingId],

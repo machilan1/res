@@ -3,23 +3,25 @@ import {
   Controller,
   InternalServerErrorException,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateFacilityDto } from './dtos/create-facility.dto';
 import { FacilitiesService } from './facilities.service';
 import { Facility } from './entities/facility.entity';
-import { Public } from 'libs/api/shared/decorators/public.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from '@res/api-shared';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('facilities')
 @Controller('facilities')
 export class FacilitiesController {
   constructor(private facilitiesService: FacilitiesService) {}
 
-  @Public()
   @Post()
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ operationId: 'createFacility' })
   async create(
-    @Body() createFacilityDto: CreateFacilityDto
+    @Body() createFacilityDto: CreateFacilityDto,
   ): Promise<Facility> {
     const res = await this.facilitiesService.create(createFacilityDto);
     if (!res) {

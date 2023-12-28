@@ -481,7 +481,29 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "PaginatedResponseOfRenting",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginationDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Renting"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -798,6 +820,11 @@
         },
         "tags": [
           "campus"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -830,6 +857,11 @@
         },
         "tags": [
           "house-type"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -862,6 +894,11 @@
         },
         "tags": [
           "facilities"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -1420,6 +1457,31 @@
           "campus",
           "houseType",
           "facilities"
+        ]
+      },
+      "PaginationDto": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "required": true,
+                "type": "number"
+              },
+              "limit": {
+                "required": true,
+                "type": "number"
+              },
+              "total": {
+                "required": true,
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "meta"
         ]
       },
       "Rule": {

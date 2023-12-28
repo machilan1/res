@@ -1,3 +1,4 @@
+import { ApiExtraModels } from '@nestjs/swagger';
 import { Campus } from './campus.entity';
 import { Facility } from './facility.entity';
 import { Feature } from './feature.entity';
@@ -6,6 +7,7 @@ import { Rule } from './rule.entity';
 import { HouseType as HouseType } from './type.entity';
 import { Type } from 'class-transformer';
 
+@ApiExtraModels()
 export class Renting {
   rentingId!: number;
   title!: string;
@@ -28,7 +30,6 @@ export class Renting {
   @Type(() => Landlord)
   landlord!: Landlord;
   isRented!: boolean;
-  // isFavorite!: boolean;
 
   constructor(data: Renting) {
     Object.assign(this, data);

@@ -10,28 +10,36 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Renting } from './entity/rentings.entity';
 import { GetRentingsParam } from './dtos/get-rentings-param.dto';
 import { RentingService } from './rentings.service';
 import { CreateRentingDto } from './dtos/create-renting.dto';
-import { GetCurrentUser } from './../../../../shared/decorators/get-current-user.decorator';
 import { SelectRenting } from '@res/api-database';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
-import { Pagination } from 'libs/api/shared/helpers/pagination';
-import { PaginatedRentings } from './entity/paginated-rentings.entity';
+import {
+  ApiPaginatedResponse,
+  GetCurrentUser,
+  PaginationDto,
+} from '@res/api-shared';
 
 @ApiTags('rentings')
 @Controller('rentings')
 export class RentingsController {
   constructor(private rentingService: RentingService) {}
-
   @ApiBearerAuth()
   @Get()
+  @ApiPaginatedResponse(Renting)
   @ApiOperation({ operationId: 'getRentings' })
-  async getRentings(@Query() params: GetRentingsParam) {
+  async getRentings(
+    @Query() params: GetRentingsParam,
+  ): Promise<PaginationDto<Renting>> {
     const res = await this.rentingService.getRentings(params);
-
     return res;
   }
 

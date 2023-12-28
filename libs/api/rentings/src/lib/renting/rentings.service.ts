@@ -24,13 +24,14 @@ import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { Pagination } from 'libs/api/shared/helpers/pagination';
+import { Pagination } from 'libs/api/shared/src/lib/helpers/pagination';
 import { Rule } from './entity/rule.entity';
 import { Campus } from './entity/campus.entity';
 import { HouseType } from './entity/type.entity';
 import { Facility } from './entity/facility.entity';
 import { Feature } from './entity/feature.entity';
 import { Landlord } from './entity/landlord.entity';
+import { PaginationDto } from '@res/api-shared';
 
 @Injectable()
 export class RentingService {
@@ -171,7 +172,11 @@ export class RentingService {
           landlord: entry.landlord!,
         }),
     );
-    return { data: filteredRes, meta: { limit, page, total: filteredCount } };
+
+    return new PaginationDto<Renting>({
+      data: filteredRes,
+      meta: { limit, page, total: filteredCount },
+    });
   }
 
   async getRentingById(rentingId: number): Promise<Renting> {

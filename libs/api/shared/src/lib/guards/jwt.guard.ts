@@ -7,11 +7,13 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { of } from 'rxjs';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride('isPublic', [

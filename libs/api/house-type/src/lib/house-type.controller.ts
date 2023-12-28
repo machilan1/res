@@ -3,23 +3,25 @@ import {
   Controller,
   InternalServerErrorException,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateHouseTypeDto } from './dtos/create-house-type.dto';
 import { HouseTypeService } from './house-type.service';
 import { HouseType } from './entities/house-type.entity';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from 'libs/api/shared/decorators/public.decorator';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminGuard, Public } from '@res/api-shared';
 
 @ApiTags('house-type')
 @Controller('house-type')
 export class HouseTypeController {
   constructor(private houseTypeService: HouseTypeService) {}
 
-  @Public()
   @Post()
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ operationId: 'createHouseType' })
   async create(
-    @Body() createHouseTypeDto: CreateHouseTypeDto
+    @Body() createHouseTypeDto: CreateHouseTypeDto,
   ): Promise<HouseType> {
     const res = await this.houseTypeService.create(createHouseTypeDto);
 

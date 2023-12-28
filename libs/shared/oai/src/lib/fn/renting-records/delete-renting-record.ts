@@ -7,22 +7,14 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 
-export interface GetRentings$Params {
-  houseTypeIds?: Array<number>;
-  campusIds?: Array<number>;
-  facilityIds?: Array<number>;
-  limit?: number;
-  page?: number;
+export interface DeleteRentingRecord$Params {
+  rentingRecordId: number;
 }
 
-export function getRentings(http: HttpClient, rootUrl: string, params?: GetRentings$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, getRentings.PATH, 'get');
+export function deleteRentingRecord(http: HttpClient, rootUrl: string, params: DeleteRentingRecord$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, deleteRentingRecord.PATH, 'delete');
   if (params) {
-    rb.query('houseTypeIds', params.houseTypeIds, {});
-    rb.query('campusIds', params.campusIds, {});
-    rb.query('facilityIds', params.facilityIds, {});
-    rb.query('limit', params.limit, {});
-    rb.query('page', params.page, {});
+    rb.path('rentingRecordId', params.rentingRecordId, {});
   }
 
   return http.request(
@@ -35,4 +27,4 @@ export function getRentings(http: HttpClient, rootUrl: string, params?: GetRenti
   );
 }
 
-getRentings.PATH = '/rentings';
+deleteRentingRecord.PATH = '/renting-records/{rentingRecordId}';

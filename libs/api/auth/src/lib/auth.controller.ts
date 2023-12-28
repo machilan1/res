@@ -1,6 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { RegisterStudentDto } from './dtos/student-register.dto';
-import { Student } from './entities/student.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Tokens } from './responses/tokens.response';
 import { AuthService } from './auth.service';
@@ -9,7 +8,7 @@ import { RegisterLandlordDto } from './dtos/register-landlord.dto';
 import { LandlordLoginDto } from './dtos/landlord-login.dto';
 import { RegisterAdminDto } from './dtos/register-admin.dto';
 import { AdminLoginDto } from './dtos/admin-login.dto';
-import { Public } from '../../../shared/decorators/public.decorator';
+import { Public } from '@res/api-shared';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,12 +19,10 @@ export class AuthController {
   @Post('register-student')
   @ApiOperation({ operationId: 'registerStudent' })
   registerStudent(
-    @Body() registerStudentDto: RegisterStudentDto
+    @Body() registerStudentDto: RegisterStudentDto,
   ): Promise<Tokens> {
     return this.authService.registerStudent(registerStudentDto);
   }
-
-  // todo : finish auth controller
 
   @Public()
   @Post('student-login')
@@ -38,7 +35,7 @@ export class AuthController {
   @Post('register-landlord')
   @ApiOperation({ operationId: 'registerLandlord' })
   registerLandlord(
-    @Body() registerLandlordDto: RegisterLandlordDto
+    @Body() registerLandlordDto: RegisterLandlordDto,
   ): Promise<Tokens> {
     return this.authService.registerLandlord(registerLandlordDto);
   }

@@ -36,7 +36,7 @@ export class RentingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getRentings$Response(params?: GetRentings$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Renting>>> {
+  getRentings$Response(params?: GetRentings$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
     return getRentings(this.http, this.rootUrl, params, context);
   }
 
@@ -46,9 +46,9 @@ export class RentingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getRentings(params?: GetRentings$Params, context?: HttpContext): Observable<Array<Renting>> {
+  getRentings(params?: GetRentings$Params, context?: HttpContext): Observable<void> {
     return this.getRentings$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Renting>>): Array<Renting> => r.body)
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
