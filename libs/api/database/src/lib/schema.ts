@@ -283,6 +283,9 @@ export const favorite = pgTable('favorite', {
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
+export type SelectFavorite = InferSelectModel<typeof favorite>;
+export type InsertFavorite = InferInsertModel<typeof favorite>;
+
 export const favoriteRelations = relations(favorite, ({ one }) => ({
   renting: one(renting, {
     fields: [favorite.rentingId],

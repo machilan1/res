@@ -10,7 +10,7 @@ import {
 
 const AUTH_HEADER = {
   Authorization:
-    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM1LCJyb2xlIjoibGFuZGxvcmQiLCJpYXQiOjE3MDM1OTc2NzgsImV4cCI6MTcwMzYwMTI3OH0.Jkl5ckFj3IIcWy0Iix_ez1zDVMWZjYvxpegur9Hb5nE',
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjgsInJvbGUiOiJsYW5kbG9yZCIsImlhdCI6MTcwMzcwNTIwMiwiZXhwIjoxNzAzNzA4ODAyfQ.0uCiTICvRBqkwFGc3BhbOyzfeBPb2PypcFzS61R6rAY',
 };
 
 const HOUSE_TYPES = ['套房', '雅房', '家庭式'];
@@ -209,6 +209,8 @@ async function seedRentings(count) {
         ...AUTH_HEADER,
       },
     });
+
+    console.log(res);
   }
 
   console.log('Seeding rentings completed');

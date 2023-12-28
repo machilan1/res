@@ -930,6 +930,79 @@
           }
         ]
       }
+    },
+    "/favorites": {
+      "post": {
+        "operationId": "createFavorite",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFavoriteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorite"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "favorites"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/favorites/{favoriteId}": {
+      "delete": {
+        "operationId": "deleteFavorite",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "favoriteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorite"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "favorites"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "info": {
@@ -1754,6 +1827,21 @@
           "rentingId",
           "createdAt",
           "studentId"
+        ]
+      },
+      "CreateFavoriteDto": {
+        "type": "object",
+        "properties": {
+          "studentNumber": {
+            "type": "string"
+          },
+          "rentingId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "studentNumber",
+          "rentingId"
         ]
       }
     }

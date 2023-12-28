@@ -9,8 +9,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RentingRecordsService } from './renting-records.service';
 import { CreateRentingRecordDto } from './dtos/create-renting-record.dto';
-import { takeWhile } from 'rxjs';
-import { GetCurrentUser } from 'libs/api/shared/decorators/get-current-user.decorator';
+import { GetCurrentUser } from '../../../shared/decorators/get-current-user.decorator';
 import { RentingRecord } from './entities/select-renting-record.entity';
 
 @ApiTags('renting-records')
