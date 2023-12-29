@@ -9,7 +9,7 @@ import { CreateCampusDto } from './dtos/create-campus.dto';
 import { CampusService } from './campus.service';
 import { Campus } from './entities/campus.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AdminGuard, Public } from '@res/api-shared';
+import { AccessRoles, RoleGuard } from '@res/api-shared';
 
 @ApiTags('campus')
 @Controller('campus')
@@ -17,7 +17,8 @@ export class CampusController {
   constructor(private campusService: CampusService) {}
 
   @Post()
-  @UseGuards(AdminGuard)
+  @AccessRoles(['admin'])
+  @UseGuards(RoleGuard)
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'createCampus' })
   async create(@Body() createCampusDto: CreateCampusDto): Promise<Campus> {

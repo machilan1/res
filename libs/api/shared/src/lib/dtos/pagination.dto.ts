@@ -1,5 +1,4 @@
-import { Type } from 'class-transformer';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty } from '@nestjs/swagger';
 
 export class PaginationDto<T> {
   @ApiHideProperty()
@@ -8,6 +7,6 @@ export class PaginationDto<T> {
   meta!: { page: number; limit: number; total: number };
 
   constructor(data: PaginationDto<T>) {
-    Object.assign(data);
+    Object.assign(this, data);
   }
 }

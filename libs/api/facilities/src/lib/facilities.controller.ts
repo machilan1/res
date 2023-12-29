@@ -8,7 +8,7 @@ import {
 import { CreateFacilityDto } from './dtos/create-facility.dto';
 import { FacilitiesService } from './facilities.service';
 import { Facility } from './entities/facility.entity';
-import { AdminGuard } from '@res/api-shared';
+import { AccessRoles, RoleGuard } from '@res/api-shared';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('facilities')
@@ -17,7 +17,8 @@ export class FacilitiesController {
   constructor(private facilitiesService: FacilitiesService) {}
 
   @Post()
-  @UseGuards(AdminGuard)
+  @AccessRoles(['admin'])
+  @UseGuards(RoleGuard)
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'createFacility' })
   async create(

@@ -1,11 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { HouseTypeService } from './libs/shared/oai/src/lib/services/house-type.service';
-import { inject } from '@angular/core';
 import {
   InsertCampus,
   InsertFacility,
   InsertHouseType,
-  InsertStudent,
 } from './libs/api/database/src';
 
 const AUTH_HEADER = {

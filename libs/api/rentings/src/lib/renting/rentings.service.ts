@@ -161,9 +161,9 @@ export class RentingService {
 
     const filteredData = dataRes.where(and(...filter));
 
-    const filteredRes = await filteredData;
+    const temp = await filteredData;
 
-    filteredRes.map(
+    const filterRes = temp.map(
       (entry) =>
         new Renting({
           ...entry,
@@ -173,12 +173,14 @@ export class RentingService {
         }),
     );
 
-    return new PaginationDto<Renting>({
-      data: filteredRes,
+    const abc = new PaginationDto<Renting>({
+      data: filterRes,
       meta: { limit, page, total: filteredCount },
     });
-  }
 
+    console.log(filterRes);
+    return abc;
+  }
   async getRentingById(rentingId: number): Promise<Renting> {
     const res = await this.conn.query.renting.findFirst({
       with: {
@@ -294,11 +296,7 @@ export class RentingService {
     return rentingRes;
   }
 
-  async updateRenting(
-    updaterId: number,
-    rentingId: number,
-    body: UpdateRentingDto,
-  ) {
+  async updateRenting(rentingId: number, body: UpdateRentingDto) {
     const {
       campusId,
       typeId: houseTypeId,
@@ -343,7 +341,7 @@ export class RentingService {
           totalFloor,
           images,
         })
-        .where(eq(renting.landlordId, updaterId))
+        .where(eq(renting.rentingId, rentingId))
         .returning();
     }
 

@@ -1,17 +1,15 @@
 import {
-  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
   Database,
   PG_CONNECTION,
-  SelectStudent,
   SelectUser,
   admin,
   landlord,
@@ -23,7 +21,7 @@ import * as bcrypt from 'bcrypt';
 import { Tokens } from './responses/tokens.response';
 import { RegisterStudentDto } from './dtos/student-register.dto';
 import { StudentLoginDto } from './dtos/student-login.dto';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNotNull } from 'drizzle-orm';
 import { RegisterLandlordDto } from './dtos/register-landlord.dto';
 import { LandlordLoginDto } from './dtos/landlord-login.dto';
 import { RegisterAdminDto } from './dtos/register-admin.dto';
@@ -68,7 +66,7 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.rt) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
       if (!res.refreshToken) {
@@ -106,16 +104,19 @@ export class AuthService {
       user: { role },
     } = userRes;
 
-    const { at, rt } = await this.signTokens({ userId, role });
+    const { accessToken, refreshToken } = await this.signTokens({
+      userId,
+      role,
+    });
 
     try {
-      await this.renewRT(userId, rt);
+      await this.renewRefreshToken(userId, refreshToken);
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException();
     }
 
-    return { at, rt };
+    return { accessToken, refreshToken };
   }
 
   async registerLandlord(
@@ -148,7 +149,7 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.rt) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
       if (!res.refreshToken) {
@@ -185,15 +186,18 @@ export class AuthService {
       user: { role },
     } = landlordRes;
 
-    const { at, rt } = await this.signTokens({ userId, role });
+    const { accessToken, refreshToken } = await this.signTokens({
+      userId,
+      role,
+    });
 
     try {
-      await this.renewRT(userId, rt);
+      await this.renewRefreshToken(userId, refreshToken);
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException();
     }
-    return { at, rt };
+    return { accessToken, refreshToken };
   }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto): Promise<Tokens> {
@@ -224,7 +228,7 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.rt) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
       if (!res.refreshToken) {
@@ -261,16 +265,60 @@ export class AuthService {
       user: { role },
     } = adminRes;
 
-    const { at, rt } = await this.signTokens({ userId, role });
+    const { accessToken, refreshToken } = await this.signTokens({
+      userId,
+      role,
+    });
 
     try {
-      await this.renewRT(userId, rt);
+      await this.renewRefreshToken(userId, refreshToken);
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException();
     }
-    return { at, rt };
+    return { accessToken, refreshToken };
   }
+
+  // Todo : logout
+  async logout(userId: number) {
+    console.log(userId);
+    try {
+      const res = await this.conn
+        .update(user)
+        .set({ refreshToken: null })
+        .where(and(eq(user.userId, userId), isNotNull(user.refreshToken)))
+        .returning();
+
+      return res;
+    } catch (err) {
+      console.log(err);
+      throw new ConflictException();
+    }
+  }
+
+  async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
+    const [res] = await this.conn
+      .select({ refreshTOkenHash: user.refreshToken, role: user.role })
+      .from(user)
+      .where(eq(user.userId, userId));
+
+    if (!res.refreshTOkenHash) {
+      throw new ForbiddenException();
+    }
+    const matches = await this.checkRefreshToken(
+      refreshToken,
+      res.refreshTOkenHash,
+    );
+
+    if (!matches) {
+      throw new ForbiddenException();
+    }
+
+    const tokens = await this.signTokens({ userId, role: res.role });
+
+    return tokens;
+  }
+
   // utilities
 
   // Get user hash by id
@@ -312,7 +360,7 @@ export class AuthService {
     role: string;
   }): Promise<Tokens> {
     try {
-      const [at, rt] = await Promise.all([
+      const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(
           {
             userId: selectUser!.userId,
@@ -334,7 +382,7 @@ export class AuthService {
           },
         ),
       ]);
-      return { at, rt };
+      return { accessToken, refreshToken };
     } catch (err) {
       console.log('---signToken');
       console.log(err);
@@ -342,17 +390,20 @@ export class AuthService {
     }
   }
 
-  private async renewRT(userId: number, rt: string) {
+  private async renewRefreshToken(userId: number, refreshToken: string) {
     const [res] = await this.conn
       .update(user)
-      .set({ refreshToken: this.encrypt(rt) })
+      .set({ refreshToken: this.encrypt(refreshToken) })
       .where(eq(user.userId, userId))
       .returning();
     return res;
   }
 
-  private async checkRt(rt: string, hash: string): Promise<boolean> {
-    const res = await bcrypt.compare(rt, hash);
+  private async checkRefreshToken(
+    refreshToken: string,
+    hash: string,
+  ): Promise<boolean> {
+    const res = await bcrypt.compare(refreshToken, hash);
     return res;
   }
 }

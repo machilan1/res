@@ -7,10 +7,7 @@ export class LandlordGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    if (
-      request['user'] &&
-      (request['user'].role === 'landlord' || request['user'].role === 'admin')
-    ) {
+    if (request['user'] && request['user'].role === 'landlord') {
       return true;
     }
 

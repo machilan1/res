@@ -9,13 +9,9 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiExtraModels,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Renting } from './entity/rentings.entity';
 import { GetRentingsParam } from './dtos/get-rentings-param.dto';
 import { RentingService } from './rentings.service';
@@ -23,17 +19,21 @@ import { CreateRentingDto } from './dtos/create-renting.dto';
 import { SelectRenting } from '@res/api-database';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 import {
+  AccessRoles,
   ApiPaginatedResponse,
   GetCurrentUser,
+  OwnerGuard,
+  OwnerOf,
   PaginationDto,
+  RoleGuard,
 } from '@res/api-shared';
 
 @ApiTags('rentings')
 @Controller('rentings')
 export class RentingsController {
   constructor(private rentingService: RentingService) {}
-  @ApiBearerAuth()
   @Get()
+  @ApiBearerAuth()
   @ApiPaginatedResponse(Renting)
   @ApiOperation({ operationId: 'getRentings' })
   async getRentings(
@@ -43,8 +43,8 @@ export class RentingsController {
     return res;
   }
 
-  @ApiBearerAuth()
   @Get(':rentingId')
+  @ApiBearerAuth()
   async getRentingById(
     @Param('rentingId', ParseIntPipe) id: number,
   ): Promise<Renting> {
@@ -56,13 +56,16 @@ export class RentingsController {
     return res!;
   }
 
-  @ApiBearerAuth()
   @Post()
+  @ApiBearerAuth()
+  @AccessRoles(['landlord'])
+  @UseGuards(RoleGuard)
   async createRenting(
     @GetCurrentUser()
     user: { userId: number; role: string },
     @Body() createRentingDto: CreateRentingDto,
   ): Promise<SelectRenting> {
+    console.log(user);
     const res = await this.rentingService.createRenting(
       user.userId,
       createRentingDto,
@@ -70,16 +73,18 @@ export class RentingsController {
     return res;
   }
 
-  @ApiBearerAuth()
   @Patch(':rentingId')
+  @ApiBearerAuth()
+  @UseGuards(RoleGuard, OwnerGuard)
+  @AccessRoles(['landlord'])
+  @OwnerOf('rentings')
   async updateRenting(
     @GetCurrentUser()
-    user: { userId: number; role: string },
-    @Body() updateRentingDto: UpdateRentingDto,
+    @Body()
+    updateRentingDto: UpdateRentingDto,
     @Param('rentingId', ParseIntPipe) rentingId: number,
   ) {
     const res = await this.rentingService.updateRenting(
-      user.userId,
       rentingId,
       updateRentingDto,
     );
@@ -88,6 +93,9 @@ export class RentingsController {
 
   @ApiBearerAuth()
   @Delete(':rentingId')
+  @UseGuards(RoleGuard, OwnerGuard)
+  @AccessRoles(['landlord'])
+  @OwnerOf('rentings')
   async deleteRenting(@Param('rentingId', ParseIntPipe) rentingId: number) {
     const res = await this.rentingService.deleteRenting(rentingId);
     return res;

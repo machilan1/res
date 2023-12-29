@@ -1,6 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
 import { RegisterStudentDto } from './dtos/student-register.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Tokens } from './responses/tokens.response';
 import { AuthService } from './auth.service';
 import { StudentLoginDto } from './dtos/student-login.dto';
@@ -8,7 +8,11 @@ import { RegisterLandlordDto } from './dtos/register-landlord.dto';
 import { LandlordLoginDto } from './dtos/landlord-login.dto';
 import { RegisterAdminDto } from './dtos/register-admin.dto';
 import { AdminLoginDto } from './dtos/admin-login.dto';
-import { Public } from '@res/api-shared';
+import {
+  GetCurrentUser,
+  Public,
+  GetRefreshTokenWithUser,
+} from '@res/api-shared';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -56,5 +60,29 @@ export class AuthController {
   @ApiOperation({ operationId: 'adminLogin' })
   adminLogin(@Body() adminLoginDto: AdminLoginDto) {
     return this.authService.adminLogin(adminLoginDto);
+  }
+
+  @Patch('logout')
+  @ApiOperation({ operationId: 'logout' })
+  @ApiBearerAuth()
+  async logout(@GetCurrentUser() user: { userId: number; role: string }) {
+    console.log('6y789126789167891', user);
+    const res = await this.authService.logout(user.userId);
+    return res;
+  }
+
+  @Get('refresh')
+  @ApiOperation({ operationId: 'updateRefreshToken' })
+  @ApiBearerAuth()
+  async updateRefreshToken(
+    @GetCurrentUser() user: { userId: number; role: string },
+    @GetRefreshTokenWithUser() refreshToken: { token: string },
+  ): Promise<Tokens> {
+    console.log(user);
+    const [type, token] = refreshToken.token.split(' ');
+
+    const res = await this.authService.refreshToken(user.userId, token);
+
+    return new Tokens(res);
   }
 }

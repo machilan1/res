@@ -1,4 +1,4 @@
-import { ConflictException, Inject } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject } from '@nestjs/common';
 import { PG_CONNECTION, Database, favorite, student } from '@res/api-database';
 import { CreateFavoriteDto } from './dtos/create-favorite.dto';
 import { eq } from 'drizzle-orm';
@@ -7,22 +7,25 @@ import { Favorite } from './entities/favorite.entity';
 export class FavoriteService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
-  async create(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {
-    const { studentNumber } = createFavoriteDto;
-
-    const [studentRes] = await this.conn
-      .select({ studentId: student.userId })
+  async create(
+    userId: number,
+    createFavoriteDto: CreateFavoriteDto,
+  ): Promise<Favorite> {
+    const [numberRes] = await this.conn
+      .select({ studentNumber: student.studentNumber })
       .from(student)
-      .where(eq(student.studentNumber, studentNumber));
+      .where(eq(student.userId, userId));
 
-    if (!studentRes.studentId) {
-      throw new ConflictException();
+    const { studentNumber } = numberRes;
+
+    if (!studentNumber) {
+      throw new BadRequestException();
     }
 
     const [res] = await this.conn
       .insert(favorite)
       .values({
-        studentId: studentRes.studentId,
+        studentId: userId,
         rentingId: createFavoriteDto.rentingId,
       })
       .returning();

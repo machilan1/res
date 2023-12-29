@@ -8,12 +8,13 @@ import {
   ParseIntPipe,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Landlord } from './entity/landlords.entity';
 import { LandlordService } from './landlords.service';
 import { GetLandlordsParam } from './dtos/get-landlord-param.dto';
-
 import { UpdateLandlordDto } from './dtos/update-landlord.dto';
+import { AccessRoles, OwnerGuard, OwnerOf, RoleGuard } from '@res/api-shared';
 
 @ApiTags('landlords')
 @Controller('landlords')
@@ -35,7 +36,7 @@ export class LandlordsController {
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'getLandlordById' })
   async getLandlordById(
-    @Param('landlordId', ParseIntPipe) landlordId: number
+    @Param('landlordId', ParseIntPipe) landlordId: number,
   ): Promise<Landlord> {
     const res = await this.landlordService.getLandlordById(landlordId);
 
@@ -44,10 +45,13 @@ export class LandlordsController {
 
   @Patch(':landlordId')
   @ApiBearerAuth()
+  @AccessRoles(['landlord'])
+  @OwnerOf('landlords')
+  @UseGuards(RoleGuard, OwnerGuard)
   @ApiOperation({ operationId: 'updateLandlord' })
   async updateLandlord(
     @Param('landlordId', ParseIntPipe) landlordId: number,
-    @Body() updateLandlordDto: UpdateLandlordDto
+    @Body() updateLandlordDto: UpdateLandlordDto,
   ) {
     await this.landlordService.updateLandlord(landlordId, updateLandlordDto);
 
@@ -55,6 +59,8 @@ export class LandlordsController {
   }
 
   @Delete(':landlordId')
+  @UseGuards(RoleGuard)
+  @AccessRoles(['admin'])
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'deleteLandlord' })
   async deleteLandlord(@Param('landlordId', ParseIntPipe) landlordId: number) {

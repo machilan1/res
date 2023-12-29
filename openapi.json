@@ -193,6 +193,53 @@
         ]
       }
     },
+    "/auth/logout": {
+      "patch": {
+        "operationId": "logout",
+        "summary": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "get": {
+        "operationId": "updateRefreshToken",
+        "summary": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/files/upload": {
       "post": {
         "operationId": "uploadFile",
@@ -1095,16 +1142,15 @@
       "Tokens": {
         "type": "object",
         "properties": {
-          "at": {
+          "accessToken": {
             "type": "string"
           },
-          "rt": {
+          "refreshToken": {
             "type": "string"
           }
         },
         "required": [
-          "at",
-          "rt"
+          "accessToken"
         ]
       },
       "StudentLoginDto": {
@@ -1894,15 +1940,11 @@
       "CreateFavoriteDto": {
         "type": "object",
         "properties": {
-          "studentNumber": {
-            "type": "string"
-          },
           "rentingId": {
             "type": "number"
           }
         },
         "required": [
-          "studentNumber",
           "rentingId"
         ]
       }

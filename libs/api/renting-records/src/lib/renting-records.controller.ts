@@ -11,7 +11,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RentingRecordsService } from './renting-records.service';
 import { CreateRentingRecordDto } from './dtos/create-renting-record.dto';
 import { RentingRecord } from './entities/select-renting-record.entity';
-import { LandlordGuard } from '@res/api-shared';
+import { AccessRoles, OwnerGuard, OwnerOf, RoleGuard } from '@res/api-shared';
 
 @ApiTags('renting-records')
 @Controller('renting-records')
@@ -19,12 +19,14 @@ export class RentingRecordsController {
   constructor(private rentingRecordsService: RentingRecordsService) {}
 
   @Post()
-  @UseGuards(LandlordGuard)
+  @UseGuards(RoleGuard)
+  @AccessRoles(['landlord'])
   @ApiOperation({ operationId: 'createRentingRecord' })
   @ApiBearerAuth()
   async create(
     @Body() createRentingRecordDto: CreateRentingRecordDto,
   ): Promise<RentingRecord> {
+    console.log(12314125);
     const [res] = await this.rentingRecordsService.create(
       createRentingRecordDto,
     );
@@ -33,7 +35,9 @@ export class RentingRecordsController {
   }
 
   @Delete(':rentingRecordId')
-  @UseGuards(LandlordGuard)
+  @UseGuards(RoleGuard, OwnerGuard)
+  @OwnerOf('renting-records')
+  @AccessRoles(['landlord'])
   @ApiOperation({ operationId: 'deleteRentingRecord' })
   @ApiBearerAuth()
   async delete(

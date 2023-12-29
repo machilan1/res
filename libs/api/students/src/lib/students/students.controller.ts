@@ -6,14 +6,13 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
-  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StudentService } from './student.service';
 import { Student } from './entity/students.entity';
-import { student } from '@res/api-database';
 import { UpdateStudentDto } from './dtos/update-student.dto';
+import { AccessRoles, OwnerGuard, OwnerOf, RoleGuard } from '@res/api-shared';
 
 @ApiTags('students')
 @Controller('students')
@@ -32,7 +31,7 @@ export class StudentsController {
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'getStudentById' })
   async getStudentById(
-    @Param('studentId', ParseIntPipe) studentId: number
+    @Param('studentId', ParseIntPipe) studentId: number,
   ): Promise<Student> {
     const res = await this.studentService.getStudentById(studentId);
     return res;
@@ -41,13 +40,16 @@ export class StudentsController {
   @Patch(':studentId')
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'updateStudent' })
+  @UseGuards(OwnerGuard, RoleGuard)
+  @AccessRoles(['student'])
+  @OwnerOf('students')
   async updateStudent(
     @Body() updateStudentDto: UpdateStudentDto,
-    @Param('studentId', ParseIntPipe) studentId: number
+    @Param('studentId', ParseIntPipe) studentId: number,
   ) {
     const res = await this.studentService.updateStudent(
       studentId,
-      updateStudentDto
+      updateStudentDto,
     );
 
     return res;
@@ -55,6 +57,8 @@ export class StudentsController {
 
   @Delete(':studentId')
   @ApiBearerAuth()
+  @UseGuards(RoleGuard)
+  @AccessRoles(['admin'])
   @ApiOperation({ operationId: 'deleteUser' })
   async deleteStudent(@Param('studentId', ParseIntPipe) studentId: number) {
     const res = await this.studentService.deleteStudent(studentId);

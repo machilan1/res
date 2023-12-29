@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   Database,
@@ -23,8 +24,14 @@ export class RentingRecordsService {
       .from(renting)
       .where(eq(renting.rentingId, createRentingRecordDto.rentingId));
 
+    console.log('--check', check);
+
+    if (!check) {
+      throw new NotFoundException('Renting not found');
+    }
+
     if (check.isRented) {
-      throw new BadRequestException();
+      throw new BadRequestException('Renting is unavailable now');
     }
 
     let res;
