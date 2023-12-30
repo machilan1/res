@@ -1,13 +1,9 @@
-import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from '@res/shared';
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, Matches, MinLength } from 'class-validator';
+import { ValidateEmail, ValidatePassword } from '@res/api-shared';
 
 export class AdminLoginDto {
-  @IsNotEmpty()
-  @Transform((params) => params.value.toLowerCase())
+  @ValidateEmail()
   email!: string;
 
-  @MinLength(PASSWORD_MIN_LENGTH)
-  @Matches(PASSWORD_REGEX)
+  @ValidatePassword()
   password!: string;
 }

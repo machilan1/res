@@ -1275,9 +1275,7 @@
             "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 6,
-            "pattern": "PASSWORD_REGEX"
+            "type": "string"
           }
         },
         "required": [
@@ -1436,11 +1434,16 @@
           },
           "name": {
             "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "campusId",
-          "name"
+          "name",
+          "deletedAt"
         ]
       },
       "HouseType": {

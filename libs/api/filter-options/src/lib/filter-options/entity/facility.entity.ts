@@ -1,10 +1,12 @@
+import { Exclude } from 'class-transformer';
+
 export class Facility {
   facilityId!: number;
   name!: string;
   icon!: string;
-
+  @Exclude()
+  deletedAt!: Date;
   constructor(data: Facility) {
-    const { facilityId, name, icon } = data;
-    Object.assign(this, { facilityId, name, icon });
+    Object.assign(this, data);
   }
 }

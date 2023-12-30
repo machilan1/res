@@ -1,11 +1,12 @@
-import { DatabaseError } from 'pg';
+import { Exclude } from 'class-transformer';
 
 export class HouseType {
   houseTypeId!: number;
   name!: string;
+  @Exclude()
+  deletedAt!: Date;
 
   constructor(data: HouseType) {
-    const { houseTypeId, name } = data;
-    Object.assign(this, { houseTypeId, name });
+    Object.assign(this, data);
   }
 }

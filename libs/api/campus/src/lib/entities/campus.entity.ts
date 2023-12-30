@@ -1,10 +1,11 @@
+import { Exclude } from 'class-transformer';
+
 export class Campus {
   campusId!: number;
   name!: string;
-
+  @Exclude()
+  deletedAt!: Date;
   constructor(data: Campus) {
-    const { campusId, name } = data;
-
-    Object.assign(this, { campusId, name });
+    Object.assign(this, data);
   }
 }

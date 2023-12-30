@@ -19,3 +19,6 @@ export * from './lib/dtos/pagination.dto';
 export * from './lib/constants/error-messages.constant';
 
 export * from './lib/pipes/trim.pipe';
+
+export * from './lib/decorators/custom-validators/email.validator';
+export * from './lib/decorators/custom-validators/password.validator';
