@@ -1192,22 +1192,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 20
+            "type": "string"
           },
           "phone": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 20,
-            "pattern": "PHONE_REGEX"
+            "type": "string"
           },
           "email": {
             "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 6
+            "type": "string"
           },
           "contactTime": {
             "$ref": "#/components/schemas/ContactTime"
@@ -1240,20 +1234,13 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 20
+            "type": "string"
           },
           "phone": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 20,
-            "pattern": "PHONE_REGEX"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "maxLength": 6,
-            "pattern": "PASSWORD_REGEX"
+            "type": "string"
           },
           "email": {
             "type": "string"

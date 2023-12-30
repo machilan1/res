@@ -56,9 +56,8 @@ export const landlord = pgTable('landlord', {
     .primaryKey(),
   email: text('email').notNull().unique(),
   banned: boolean('banned').default(false).notNull(),
-  contactTime: jsonb('contact_time')
-    .$type<{ start: number; end: number }>()
-    .default({ start: 9, end: 21 }),
+  contactTimeStart: integer('contact_time_start').notNull().default(9),
+  contactTimeEnd: integer('contact_time_end').notNull().default(21),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 

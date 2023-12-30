@@ -9,6 +9,12 @@ import {
 } from '@res/shared';
 import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+import {
+  ValidateEmail,
+  ValidateName,
+  ValidatePassword,
+  ValidatePhone,
+} from '@res/api-shared';
 
 class ContactTime {
   start!: number;
@@ -16,20 +22,16 @@ class ContactTime {
 }
 
 export class RegisterLandlordDto {
-  @MinLength(NAME_MIN_LENGTH)
-  @MaxLength(NAME_MAX_LENGTH)
+  @ValidateName()
   name!: string;
 
-  @MinLength(PHONE_MIN_LENGTH)
-  @MaxLength(PHONE_MAX_LENGTH)
-  @Matches(PHONE_REGEX)
+  @ValidatePhone()
   phone!: string;
 
-  @IsNotEmpty()
-  @Transform((params) => params.value.toLowerCase())
+  @ValidateEmail()
   email!: string;
 
-  @MinLength(PASSWORD_MIN_LENGTH)
+  @ValidatePassword()
   password!: string;
 
   @Optional()

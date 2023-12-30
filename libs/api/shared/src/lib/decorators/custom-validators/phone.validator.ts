@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { PHONE_MAX_LENGTH, PHONE_MIN_LENGTH, PHONE_REGEX } from '@res/shared';
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
+import { Matches, MaxLength, MinLength } from 'class-validator';
 
 export function ValidatePhone() {
   return applyDecorators(
