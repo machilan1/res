@@ -4,6 +4,7 @@ export class Facility {
   icon!: string;
 
   constructor(data: Facility) {
-    Object.assign(this, data);
+    const { facilityId, name, icon } = data;
+    Object.assign(this, { facilityId, name, icon });
   }
 }

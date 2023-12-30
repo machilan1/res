@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterStudentDto } from './dtos/student-register.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Tokens } from './responses/tokens.response';
@@ -12,6 +20,7 @@ import {
   GetCurrentUser,
   Public,
   GetRefreshTokenWithUser,
+  CREDENTIAL_ERROR_MSG,
 } from '@res/api-shared';
 
 @ApiTags('auth')
@@ -66,7 +75,6 @@ export class AuthController {
   @ApiOperation({ operationId: 'logout' })
   @ApiBearerAuth()
   async logout(@GetCurrentUser() user: { userId: number; role: string }) {
-    console.log('6y789126789167891', user);
     const res = await this.authService.logout(user.userId);
     return res;
   }
@@ -78,7 +86,9 @@ export class AuthController {
     @GetCurrentUser() user: { userId: number; role: string },
     @GetRefreshTokenWithUser() refreshToken: { token: string },
   ): Promise<Tokens> {
-    console.log(user);
+    if (!refreshToken.token) {
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
+    }
     const [type, token] = refreshToken.token.split(' ');
 
     const res = await this.authService.refreshToken(user.userId, token);

@@ -43,11 +43,11 @@ export class AuthService {
   constructor(
     @Inject(PG_CONNECTION) private conn: Database,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async registerStudent(
-    registerStudentDto: RegisterStudentDto
+    registerStudentDto: RegisterStudentDto,
   ): Promise<Tokens> {
     let userRes: SelectUser;
 
@@ -87,7 +87,7 @@ export class AuthService {
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException(
-        'Unexpected error occured. (student registration)'
+        'Unexpected error occured. (student registration)',
       );
     }
 
@@ -106,7 +106,7 @@ export class AuthService {
 
     const matches = await this.checkPassword(
       studentLoginDto.password,
-      userRes.user.password
+      userRes.user.password,
     );
 
     if (!matches) {
@@ -134,7 +134,7 @@ export class AuthService {
   }
 
   async registerLandlord(
-    registerLandlordDto: RegisterLandlordDto
+    registerLandlordDto: RegisterLandlordDto,
   ): Promise<Tokens> {
     let userRes: SelectUser;
     const { name, password, phone, email } = registerLandlordDto;
@@ -189,7 +189,7 @@ export class AuthService {
 
     const matches = await this.checkPassword(
       landlordLoginDto.password,
-      landlordRes.user.password
+      landlordRes.user.password,
     );
 
     if (!matches) {
@@ -268,7 +268,7 @@ export class AuthService {
 
     const matches = await this.checkPassword(
       adminLoginDto.password,
-      adminRes.user.password
+      adminRes.user.password,
     );
 
     if (!matches) {
@@ -294,9 +294,10 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  // Todo : logout
   async logout(userId: number) {
-    console.log(userId);
+    if (!userId) {
+      throw new BadRequestException();
+    }
     try {
       const res = await this.conn
         .update(user)
@@ -322,7 +323,7 @@ export class AuthService {
     }
     const matches = await this.checkRefreshToken(
       refreshToken,
-      res.refreshTokenHash
+      res.refreshTokenHash,
     );
 
     if (!matches) {
@@ -360,7 +361,7 @@ export class AuthService {
   private encrypt(content: string) {
     const hash = bcrypt.hashSync(
       content,
-      +this.configService.get('SALT_ROUND') ?? 12
+      +this.configService.get('SALT_ROUND') ?? 12,
     );
     return hash;
   }
@@ -384,7 +385,7 @@ export class AuthService {
           {
             expiresIn:
               this.configService.get('ACCESS_TOKEN_HOURS_TILL_EXPIRE') + 'h',
-          }
+          },
         ),
         this.jwtService.signAsync(
           {
@@ -394,7 +395,7 @@ export class AuthService {
           {
             expiresIn:
               this.configService.get('REFRESH_TOKEN_DAYS_TILL_EXPIRE') + 'd',
-          }
+          },
         ),
       ]);
       return { accessToken, refreshToken };
@@ -416,7 +417,7 @@ export class AuthService {
 
   private async checkRefreshToken(
     refreshToken: string,
-    hash: string
+    hash: string,
   ): Promise<boolean> {
     const res = await bcrypt.compare(refreshToken, hash);
     return res;

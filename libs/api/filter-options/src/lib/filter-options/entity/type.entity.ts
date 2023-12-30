@@ -1,8 +1,11 @@
+import { DatabaseError } from 'pg';
+
 export class HouseType {
   houseTypeId!: number;
   name!: string;
 
   constructor(data: HouseType) {
-    Object.assign(this, data);
+    const { houseTypeId, name } = data;
+    Object.assign(this, { houseTypeId, name });
   }
 }

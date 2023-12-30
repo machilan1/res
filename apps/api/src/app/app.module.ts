@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 
-import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from '@res/api-shared';
 import { DatabaseModule } from '@res/api-database';
@@ -41,11 +40,10 @@ import { ApiFavoritesModule } from '@res/api-favorites';
   ],
   controllers: [],
   providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtGuard,
+    // },
   ],
 })
 export class AppModule {}

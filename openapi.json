@@ -1902,10 +1902,12 @@
         "type": "object",
         "properties": {
           "rentingId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           },
           "studentId": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1
           }
         },
         "required": [
