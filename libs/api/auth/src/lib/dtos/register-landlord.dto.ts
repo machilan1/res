@@ -1,25 +1,13 @@
-import { Optional } from '@nestjs/common';
+import { IsOptional, ValidateIf } from 'class-validator';
+
 import {
-  NAME_MAX_LENGTH,
-  NAME_MIN_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  PHONE_MAX_LENGTH,
-  PHONE_MIN_LENGTH,
-  PHONE_REGEX,
-} from '@res/shared';
-import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import {
+  IsBiggerThan,
+  START_IS_LARGER_ERR,
   ValidateEmail,
   ValidateName,
   ValidatePassword,
   ValidatePhone,
 } from '@res/api-shared';
-
-class ContactTime {
-  start!: number;
-  end!: number;
-}
 
 export class RegisterLandlordDto {
   @ValidateName()
@@ -34,7 +22,13 @@ export class RegisterLandlordDto {
   @ValidatePassword()
   password!: string;
 
-  @Optional()
-  @Type(() => ContactTime)
-  contactTime!: ContactTime | null | undefined;
+  @IsOptional()
+  contactTimeStart!: number;
+
+  @IsOptional()
+  @ValidateIf((entry) => entry.contactTimeStart)
+  @IsBiggerThan('contactTimeStart', {
+    message: START_IS_LARGER_ERR,
+  })
+  contactTimeEnd!: number;
 }

@@ -24,3 +24,4 @@ export * from './lib/decorators/custom-validators/email.validator';
 export * from './lib/decorators/custom-validators/password.validator';
 export * from './lib/decorators/custom-validators/name.validator';
 export * from './lib/decorators/custom-validators/phone.validator';
+export * from './lib/decorators/custom-validators/is-bigger-than';

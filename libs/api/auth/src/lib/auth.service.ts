@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -12,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
   Database,
+  InsertLandlord,
   PG_CONNECTION,
   SelectUser,
   admin,
@@ -33,6 +33,7 @@ import {
   CREDENTIAL_ERROR_MSG,
   REFRESH_TOKEN_NOT_FOUND_ERROR_MSG,
   REGISTER_ERROR_MSG,
+  START_IS_LARGER_ERR,
   UNKNOWN_ERROR_MSG,
   USER_NOT_FOUND_ERROR_MSG,
   USER_UPDATE_ERROR_MSG,
@@ -45,7 +46,6 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-
   async registerStudent(
     registerStudentDto: RegisterStudentDto,
   ): Promise<Tokens> {
@@ -137,7 +137,8 @@ export class AuthService {
     registerLandlordDto: RegisterLandlordDto,
   ): Promise<Tokens> {
     let userRes: SelectUser;
-    const { name, password, phone, email } = registerLandlordDto;
+    const { name, password, phone, email, contactTimeStart, contactTimeEnd } =
+      registerLandlordDto;
 
     const hashedPassword = this.encrypt(password);
 
@@ -147,12 +148,17 @@ export class AuthService {
         .values({ name, password: hashedPassword, phone, role: 'landlord' })
         .returning();
 
+      const values: InsertLandlord = { email, userId: userRes.userId };
+
+      if (contactTimeStart && contactTimeEnd) {
+        (values.contactTimeStart = contactTimeStart),
+          (values.contactTimeEnd = contactTimeEnd);
+      }
+
       try {
-        await tx
-          .insert(landlord)
-          .values({ email, userId: userRes.userId })
-          .returning();
+        await tx.insert(landlord).values(values).returning();
       } catch (err) {
+        console.log(err);
         throw new ConflictException(REGISTER_ERROR_MSG);
       }
       const { userId, role } = userRes;

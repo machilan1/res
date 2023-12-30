@@ -1173,21 +1173,6 @@
           "password"
         ]
       },
-      "ContactTime": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "number"
-          },
-          "end": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "start",
-          "end"
-        ]
-      },
       "RegisterLandlordDto": {
         "type": "object",
         "properties": {
@@ -1203,8 +1188,11 @@
           "password": {
             "type": "string"
           },
-          "contactTime": {
-            "$ref": "#/components/schemas/ContactTime"
+          "contactTimeStart": {
+            "type": "number"
+          },
+          "contactTimeEnd": {
+            "type": "number"
           }
         },
         "required": [
@@ -1212,7 +1200,8 @@
           "phone",
           "email",
           "password",
-          "contactTime"
+          "contactTimeStart",
+          "contactTimeEnd"
         ]
       },
       "LandlordLoginDto": {

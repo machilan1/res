@@ -13,3 +13,7 @@ export const NOT_FOUND = 'Resource not found';
 // Users
 export const USER_NOT_FOUND_ERROR_MSG = 'User not found';
 export const USER_UPDATE_ERROR_MSG = 'Failed to update user';
+
+// Dtos
+
+export const START_IS_LARGER_ERR = 'End time should be larger than start time';
