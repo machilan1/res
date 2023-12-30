@@ -1228,9 +1228,7 @@
             "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 6,
-            "pattern": "PASSWORD_REGEX"
+            "type": "string"
           }
         },
         "required": [
