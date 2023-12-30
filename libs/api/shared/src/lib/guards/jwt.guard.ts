@@ -12,6 +12,9 @@ import {
   CREDENTIAL_ERROR_MSG,
   UNKNOWN_ERROR_MSG,
 } from '../constants/error-messages.constant';
+import { USER } from '../constants/context-meta.constant';
+
+import { AttachedUser } from '../decorators/get-current-user.decorator';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
@@ -42,7 +45,7 @@ export class JwtGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env['JWT_SECRET'],
       });
-      request['user'] = payload;
+      request[USER] = payload as AttachedUser;
     } catch {
       throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }

@@ -4,7 +4,6 @@ import {
   Get,
   Patch,
   Post,
-  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { RegisterStudentDto } from './dtos/student-register.dto';
@@ -19,9 +18,11 @@ import { AdminLoginDto } from './dtos/admin-login.dto';
 import {
   GetCurrentUser,
   Public,
-  GetRefreshTokenWithUser,
+  GetRefreshToken,
   CREDENTIAL_ERROR_MSG,
+  AttachedUser,
 } from '@res/api-shared';
+import { AccessToken } from './responses/access-token.response';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -61,38 +62,37 @@ export class AuthController {
   @Public()
   @Post('register-admin')
   @ApiOperation({ operationId: 'registerAdmin' })
-  registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
+  registerAdmin(@Body() registerAdminDto: RegisterAdminDto): Promise<Tokens> {
     return this.authService.registerAdmin(registerAdminDto);
   }
   @Public()
   @Post('admin-login')
   @ApiOperation({ operationId: 'adminLogin' })
-  adminLogin(@Body() adminLoginDto: AdminLoginDto) {
+  adminLogin(@Body() adminLoginDto: AdminLoginDto): Promise<Tokens> {
     return this.authService.adminLogin(adminLoginDto);
   }
 
-  @Patch('logout')
+  @Post('logout')
   @ApiOperation({ operationId: 'logout' })
   @ApiBearerAuth()
-  async logout(@GetCurrentUser() user: { userId: number; role: string }) {
-    const res = await this.authService.logout(user.userId);
-    return res;
+  async logout(@GetCurrentUser() user: AttachedUser) {
+    return this.authService.logout(user.userId);
   }
 
-  @Get('refresh')
+  @Post('refresh')
   @ApiOperation({ operationId: 'updateRefreshToken' })
   @ApiBearerAuth()
   async updateRefreshToken(
-    @GetCurrentUser() user: { userId: number; role: string },
-    @GetRefreshTokenWithUser() refreshToken: { token: string },
-  ): Promise<Tokens> {
+    @GetCurrentUser() user: AttachedUser,
+    @GetRefreshToken() refreshToken: { token: string },
+  ): Promise<AccessToken> {
     if (!refreshToken.token) {
       throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
+
+    console.log(user);
     const [type, token] = refreshToken.token.split(' ');
 
-    const res = await this.authService.refreshToken(user.userId, token);
-
-    return new Tokens(res);
+    return this.authService.refreshAccessToken(user.userId, token);
   }
 }

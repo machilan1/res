@@ -1,4 +1,4 @@
-import { IsOptional, ValidateIf } from 'class-validator';
+import { IsOptional, Min, ValidateIf } from 'class-validator';
 
 import {
   IsBiggerThan,
@@ -23,6 +23,7 @@ export class RegisterLandlordDto {
   password!: string;
 
   @IsOptional()
+  @Min(0)
   contactTimeStart!: number;
 
   @IsOptional()

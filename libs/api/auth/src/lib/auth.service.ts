@@ -30,14 +30,15 @@ import { LandlordLoginDto } from './dtos/landlord-login.dto';
 import { RegisterAdminDto } from './dtos/register-admin.dto';
 import { AdminLoginDto } from './dtos/admin-login.dto';
 import {
+  AttachedUser,
   CREDENTIAL_ERROR_MSG,
   REFRESH_TOKEN_NOT_FOUND_ERROR_MSG,
   REGISTER_ERROR_MSG,
-  START_IS_LARGER_ERR,
   UNKNOWN_ERROR_MSG,
   USER_NOT_FOUND_ERROR_MSG,
   USER_UPDATE_ERROR_MSG,
 } from '@res/api-shared';
+import { AccessToken } from './responses/access-token.response';
 
 @Injectable()
 export class AuthService {
@@ -318,7 +319,11 @@ export class AuthService {
     }
   }
 
-  async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
+  async refreshAccessToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<AccessToken> {
+    console.log(userId, refreshToken);
     const [res] = await this.conn
       .select({ refreshTokenHash: user.refreshToken, role: user.role })
       .from(user)
@@ -327,6 +332,7 @@ export class AuthService {
     if (!res.refreshTokenHash) {
       throw new BadRequestException();
     }
+
     const matches = await this.checkRefreshToken(
       refreshToken,
       res.refreshTokenHash,
@@ -338,7 +344,7 @@ export class AuthService {
 
     const tokens = await this.signTokens({ userId, role: res.role });
 
-    return tokens;
+    return new AccessToken({ accessToken: tokens.accessToken });
   }
 
   // utilities
@@ -425,7 +431,21 @@ export class AuthService {
     refreshToken: string,
     hash: string,
   ): Promise<boolean> {
-    const res = await bcrypt.compare(refreshToken, hash);
-    return res;
+    const compareRes = await bcrypt.compare(refreshToken, hash);
+
+    const valid = this.validateToken(refreshToken);
+
+    console.log(valid);
+    return valid;
+  }
+
+  private async validateToken(token: string): Promise<boolean> {
+    const res = await this.jwtService.verifyAsync<AttachedUser>(token);
+
+    console.log(res);
+    if (!res) {
+      return false;
+    }
+    return true;
   }
 }

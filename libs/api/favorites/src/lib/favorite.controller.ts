@@ -12,6 +12,7 @@ import { FavoriteService } from './favorite.service';
 import { Favorite } from './entities/favorite.entity';
 import {
   AccessRoles,
+  AttachedUser,
   GetCurrentUser,
   OwnerGuard,
   OwnerOf,
@@ -30,7 +31,7 @@ export class FavoritesController {
   @ApiOperation({ operationId: 'createFavorite' })
   async create(
     @Body() createFavoriteDto: CreateFavoriteDto,
-    @GetCurrentUser() user: { userId: number; role: string },
+    @GetCurrentUser() user: AttachedUser,
   ): Promise<Favorite> {
     const res = await this.favoriteService.create(
       user.userId,

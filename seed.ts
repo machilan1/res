@@ -206,8 +206,6 @@ async function seedRentings(count) {
         ...AUTH_HEADER,
       },
     });
-
-    console.log(res);
   }
 
   console.log('Seeding rentings completed');

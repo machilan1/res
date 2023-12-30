@@ -1,9 +1,8 @@
 export class Tokens {
   accessToken!: string;
-  refreshToken?: string;
+  refreshToken!: string;
 
   constructor(data: Tokens) {
-    const { accessToken } = data;
-    this.accessToken = accessToken;
+    Object.assign(this, data);
   }
 }

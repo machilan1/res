@@ -174,13 +174,12 @@ export class RentingService {
         }),
     );
 
-    const abc = new PaginationDto<Renting>({
+    const res = new PaginationDto<Renting>({
       data: filterRes,
       meta: { limit, page, total: filteredCount },
     });
 
-    console.log(filterRes);
-    return abc;
+    return res;
   }
   async getRentingById(rentingId: number): Promise<Renting> {
     const res = await this.conn.query.renting.findFirst({

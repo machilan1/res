@@ -1,19 +1,9 @@
-import { Transform } from 'class-transformer';
-import { Matches, MaxLength, MinLength } from 'class-validator';
-import {
-  PASSWORD_REGEX,
-  STUDENT_NUMBER_LENGTH,
-  STUDENT_NUMBER_REGEX,
-} from '@res/shared';
+import { ValidatePassword, ValidateStudentNumber } from '@res/api-shared';
 
 export class StudentLoginDto {
-  @MinLength(STUDENT_NUMBER_LENGTH)
-  @MaxLength(STUDENT_NUMBER_LENGTH)
-  @Matches(STUDENT_NUMBER_REGEX)
-  @Transform((params) => params.value.toLowerCase())
+  @ValidateStudentNumber()
   studentNumber!: string;
 
-  @MinLength(6)
-  @Matches(PASSWORD_REGEX)
+  @ValidatePassword()
   password!: string;
 }

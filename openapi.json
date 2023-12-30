@@ -194,12 +194,12 @@
       }
     },
     "/auth/logout": {
-      "patch": {
+      "post": {
         "operationId": "logout",
         "summary": "",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": ""
           }
         },
@@ -214,17 +214,17 @@
       }
     },
     "/auth/refresh": {
-      "get": {
+      "post": {
         "operationId": "updateRefreshToken",
         "summary": "",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Tokens"
+                  "type": "object"
                 }
               }
             }
@@ -1110,26 +1110,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 20
+            "type": "string"
           },
           "phone": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 20,
-            "pattern": "PHONE_REGEX"
+            "type": "string"
           },
           "studentNumber": {
-            "type": "string",
-            "minLength": 9,
-            "maxLength": 9,
-            "pattern": "STUDENT_NUMBER_REGEX"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 6,
-            "pattern": "PASSWORD_REGEX"
+            "type": "string"
           }
         },
         "required": [
@@ -1150,22 +1140,18 @@
           }
         },
         "required": [
-          "accessToken"
+          "accessToken",
+          "refreshToken"
         ]
       },
       "StudentLoginDto": {
         "type": "object",
         "properties": {
           "studentNumber": {
-            "type": "string",
-            "minLength": 9,
-            "maxLength": 9,
-            "pattern": "STUDENT_NUMBER_REGEX"
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "minLength": 6,
-            "pattern": "PASSWORD_REGEX"
+            "type": "string"
           }
         },
         "required": [
@@ -1189,7 +1175,8 @@
             "type": "string"
           },
           "contactTimeStart": {
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "contactTimeEnd": {
             "type": "number"

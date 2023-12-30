@@ -21,6 +21,7 @@ import { UpdateRentingDto } from './dtos/update-renting.dto';
 import {
   AccessRoles,
   ApiPaginatedResponse,
+  AttachedUser,
   GetCurrentUser,
   OwnerGuard,
   OwnerOf,
@@ -62,10 +63,9 @@ export class RentingsController {
   @UseGuards(RoleGuard)
   async createRenting(
     @GetCurrentUser()
-    user: { userId: number; role: string },
+    user: AttachedUser,
     @Body() createRentingDto: CreateRentingDto,
   ): Promise<SelectRenting> {
-    console.log(user);
     const res = await this.rentingService.createRenting(
       user.userId,
       createRentingDto,
@@ -79,7 +79,6 @@ export class RentingsController {
   @AccessRoles(['landlord'])
   @OwnerOf('rentings')
   async updateRenting(
-    @GetCurrentUser()
     @Body()
     updateRentingDto: UpdateRentingDto,
     @Param('rentingId', ParseIntPipe) rentingId: number,
