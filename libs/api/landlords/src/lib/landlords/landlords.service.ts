@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -15,6 +16,7 @@ import {
 
 import { GetLandlordsParam } from './dtos/get-landlord-param.dto';
 import { and, eq, isNull } from 'drizzle-orm';
+import { USER_NOT_FOUND_ERROR_MSG } from '@res/api-shared';
 
 @Injectable()
 export class LandlordService {
@@ -70,7 +72,7 @@ export class LandlordService {
     } catch (err) {
       console.log('---updateLandlord');
       console.log(err);
-      throw new ConflictException();
+      throw new BadRequestException();
     }
   }
 
@@ -82,7 +84,7 @@ export class LandlordService {
       .returning();
 
     if (!res || res.length === 0) {
-      throw new NotFoundException();
+      throw new NotFoundException(USER_NOT_FOUND_ERROR_MSG);
     }
   }
 }

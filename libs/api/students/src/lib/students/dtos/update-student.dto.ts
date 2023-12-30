@@ -1,16 +1,5 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import {
-  PHONE_MAX_LENGTH,
-  PHONE_MIN_LENGTH,
-  STUDENT_NUMBER_LENGTH,
-  STUDENT_NUMBER_REGEX,
-} from '@res/shared';
+import { IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { PHONE_MAX_LENGTH, PHONE_MIN_LENGTH } from '@res/shared';
 export class UpdateStudentDto {
   @IsOptional()
   @IsNotEmpty()

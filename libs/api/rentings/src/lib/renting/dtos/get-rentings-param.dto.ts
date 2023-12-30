@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsPositive, Max, Min } from 'class-validator';
+import { IsOptional, IsPositive, Min } from 'class-validator';
 
 export class GetRentingsParam {
   @IsOptional()

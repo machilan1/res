@@ -1,5 +1,4 @@
 import { Optional } from '@nestjs/common';
-import { InsertLandlord, InsertUser } from '@res/api-database';
 import {
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,

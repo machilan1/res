@@ -1,9 +1,12 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -26,28 +29,36 @@ import { RegisterLandlordDto } from './dtos/register-landlord.dto';
 import { LandlordLoginDto } from './dtos/landlord-login.dto';
 import { RegisterAdminDto } from './dtos/register-admin.dto';
 import { AdminLoginDto } from './dtos/admin-login.dto';
+import {
+  CREDENTIAL_ERROR_MSG,
+  REFRESH_TOKEN_NOT_FOUND_ERROR_MSG,
+  REGISTER_ERROR_MSG,
+  UNKNOWN_ERROR_MSG,
+  USER_NOT_FOUND_ERROR_MSG,
+  USER_UPDATE_ERROR_MSG,
+} from '@res/api-shared';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(PG_CONNECTION) private conn: Database,
     private jwtService: JwtService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   async registerStudent(
-    registerStudentDto: RegisterStudentDto,
+    registerStudentDto: RegisterStudentDto
   ): Promise<Tokens> {
     let userRes: SelectUser;
 
     const { name, password, phone, studentNumber } = registerStudentDto;
     const hashedPassword = this.encrypt(password);
+
     const transactionRes = await this.conn.transaction(async (tx) => {
       [userRes] = await tx
         .insert(user)
         .values({ name, password: hashedPassword, phone, role: 'student' })
         .returning();
-
       try {
         await tx
           .insert(student)
@@ -56,7 +67,7 @@ export class AuthService {
       } catch (err) {
         console.log('---transaction student res');
         console.log(err);
-        throw new ConflictException('Fail to Register');
+        throw new BadRequestException(REGISTER_ERROR_MSG);
       }
       const { userId, role } = userRes;
       return { userId, role };
@@ -66,15 +77,18 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken!) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
+
       if (!res.refreshToken) {
-        throw new ConflictException();
+        throw new ConflictException(REFRESH_TOKEN_NOT_FOUND_ERROR_MSG);
       }
     } catch (err) {
       console.log(err);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(
+        'Unexpected error occured. (student registration)'
+      );
     }
 
     return tokens;
@@ -87,16 +101,16 @@ export class AuthService {
     });
 
     if (!userRes) {
-      throw new ConflictException();
+      throw new NotFoundException(USER_NOT_FOUND_ERROR_MSG);
     }
 
     const matches = await this.checkPassword(
       studentLoginDto.password,
-      userRes.user.password,
+      userRes.user.password
     );
 
     if (!matches) {
-      throw new ConflictException();
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
 
     const {
@@ -110,7 +124,7 @@ export class AuthService {
     });
 
     try {
-      await this.renewRefreshToken(userId, refreshToken);
+      await this.renewRefreshToken(userId, refreshToken!);
     } catch (err) {
       console.log(err);
       throw new InternalServerErrorException();
@@ -120,7 +134,7 @@ export class AuthService {
   }
 
   async registerLandlord(
-    registerLandlordDto: RegisterLandlordDto,
+    registerLandlordDto: RegisterLandlordDto
   ): Promise<Tokens> {
     let userRes: SelectUser;
     const { name, password, phone, email } = registerLandlordDto;
@@ -139,7 +153,7 @@ export class AuthService {
           .values({ email, userId: userRes.userId })
           .returning();
       } catch (err) {
-        throw new ConflictException('Fail to Register');
+        throw new ConflictException(REGISTER_ERROR_MSG);
       }
       const { userId, role } = userRes;
       return { userId, role };
@@ -149,15 +163,15 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken!) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
       if (!res.refreshToken) {
-        throw new ConflictException();
+        throw new BadRequestException(USER_UPDATE_ERROR_MSG);
       }
     } catch (err) {
       console.log(err);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
 
     return tokens;
@@ -168,17 +182,18 @@ export class AuthService {
       with: { user: true },
       where: eq(landlord.email, landlordLoginDto.email),
     });
+
     if (!landlordRes) {
-      throw new ConflictException();
+      throw new NotFoundException(USER_NOT_FOUND_ERROR_MSG);
     }
 
     const matches = await this.checkPassword(
       landlordLoginDto.password,
-      landlordRes.user.password,
+      landlordRes.user.password
     );
 
     if (!matches) {
-      throw new ConflictException();
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
 
     const {
@@ -192,10 +207,10 @@ export class AuthService {
     });
 
     try {
-      await this.renewRefreshToken(userId, refreshToken);
+      await this.renewRefreshToken(userId, refreshToken!);
     } catch (err) {
       console.log(err);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
     return { accessToken, refreshToken };
   }
@@ -217,7 +232,7 @@ export class AuthService {
           .values({ email, userId: userRes.userId })
           .returning();
       } catch (err) {
-        throw new ConflictException('Fail to Register');
+        throw new BadRequestException(REGISTER_ERROR_MSG);
       }
       const { userId, role } = userRes;
       return { userId, role };
@@ -228,15 +243,15 @@ export class AuthService {
     try {
       const [res] = await this.conn
         .update(user)
-        .set({ refreshToken: this.encrypt(tokens.refreshToken) })
+        .set({ refreshToken: this.encrypt(tokens.refreshToken!) })
         .where(eq(user.userId, transactionRes.userId))
         .returning({ refreshToken: user.refreshToken });
       if (!res.refreshToken) {
-        throw new ConflictException();
+        throw new BadRequestException(USER_UPDATE_ERROR_MSG);
       }
     } catch (err) {
       console.log(err);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
 
     return tokens;
@@ -248,16 +263,16 @@ export class AuthService {
       where: eq(admin.email, adminLoginDto.email),
     });
     if (!adminRes) {
-      throw new ConflictException();
+      throw new NotFoundException(USER_NOT_FOUND_ERROR_MSG);
     }
 
     const matches = await this.checkPassword(
       adminLoginDto.password,
-      adminRes.user.password,
+      adminRes.user.password
     );
 
     if (!matches) {
-      throw new ConflictException();
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
 
     const {
@@ -271,10 +286,10 @@ export class AuthService {
     });
 
     try {
-      await this.renewRefreshToken(userId, refreshToken);
+      await this.renewRefreshToken(userId, refreshToken!);
     } catch (err) {
       console.log(err);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
     return { accessToken, refreshToken };
   }
@@ -292,26 +307,26 @@ export class AuthService {
       return res;
     } catch (err) {
       console.log(err);
-      throw new ConflictException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
   }
 
   async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
     const [res] = await this.conn
-      .select({ refreshTOkenHash: user.refreshToken, role: user.role })
+      .select({ refreshTokenHash: user.refreshToken, role: user.role })
       .from(user)
       .where(eq(user.userId, userId));
 
-    if (!res.refreshTOkenHash) {
-      throw new ForbiddenException();
+    if (!res.refreshTokenHash) {
+      throw new BadRequestException();
     }
     const matches = await this.checkRefreshToken(
       refreshToken,
-      res.refreshTOkenHash,
+      res.refreshTokenHash
     );
 
     if (!matches) {
-      throw new ForbiddenException();
+      throw new BadRequestException();
     }
 
     const tokens = await this.signTokens({ userId, role: res.role });
@@ -345,7 +360,7 @@ export class AuthService {
   private encrypt(content: string) {
     const hash = bcrypt.hashSync(
       content,
-      +this.configService.get('SALT_ROUND') ?? 12,
+      +this.configService.get('SALT_ROUND') ?? 12
     );
     return hash;
   }
@@ -369,7 +384,7 @@ export class AuthService {
           {
             expiresIn:
               this.configService.get('ACCESS_TOKEN_HOURS_TILL_EXPIRE') + 'h',
-          },
+          }
         ),
         this.jwtService.signAsync(
           {
@@ -379,7 +394,7 @@ export class AuthService {
           {
             expiresIn:
               this.configService.get('REFRESH_TOKEN_DAYS_TILL_EXPIRE') + 'd',
-          },
+          }
         ),
       ]);
       return { accessToken, refreshToken };
@@ -401,7 +416,7 @@ export class AuthService {
 
   private async checkRefreshToken(
     refreshToken: string,
-    hash: string,
+    hash: string
   ): Promise<boolean> {
     const res = await bcrypt.compare(refreshToken, hash);
     return res;

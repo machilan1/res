@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Database, PG_CONNECTION, facility } from '@res/api-database';
 import { CreateFacilityDto } from './dtos/create-facility.dto';
 import { Facility } from './entities/facility.entity';
@@ -19,7 +24,7 @@ export class FacilitiesService {
       if (err instanceof PostgresError && err.code === '23505') {
         throw new ConflictException('Duplicated facility name');
       }
-      return;
+      throw new InternalServerErrorException('Failed to create');
     }
   }
 }

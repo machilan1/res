@@ -9,7 +9,7 @@ export class FavoriteService {
 
   async create(
     userId: number,
-    createFavoriteDto: CreateFavoriteDto,
+    createFavoriteDto: CreateFavoriteDto
   ): Promise<Favorite> {
     const [numberRes] = await this.conn
       .select({ studentNumber: student.studentNumber })
@@ -19,7 +19,7 @@ export class FavoriteService {
     const { studentNumber } = numberRes;
 
     if (!studentNumber) {
-      throw new BadRequestException();
+      throw new ConflictException();
     }
 
     const [res] = await this.conn

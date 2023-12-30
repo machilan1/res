@@ -1,5 +1,3 @@
-import { SelectRentingRecord } from '@res/api-database';
-
 export class RentingRecord {
   rentingRecordId!: number;
   rentingId!: number;

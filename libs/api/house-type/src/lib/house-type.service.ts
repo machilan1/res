@@ -1,8 +1,14 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Database, PG_CONNECTION, houseType } from '@res/api-database';
 import { HouseType } from './entities/house-type.entity';
 import { CreateHouseTypeDto } from './dtos/create-house-type.dto';
 import { PostgresError } from 'postgres';
+import { FAIL_TO_CREATE } from '@res/api-shared';
 
 @Injectable()
 export class HouseTypeService {
@@ -20,7 +26,7 @@ export class HouseTypeService {
       if (err instanceof PostgresError && err.code === '23505') {
         throw new ConflictException('Duplicated house type.');
       }
-      return;
+      throw new InternalServerErrorException(FAIL_TO_CREATE);
     }
   }
 }

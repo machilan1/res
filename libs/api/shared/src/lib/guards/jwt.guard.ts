@@ -2,18 +2,20 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import {
+  CREDENTIAL_ERROR_MSG,
+  UNKNOWN_ERROR_MSG,
+} from '../constants/error-messages.constant';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private reflector: Reflector,
-  ) {}
+  constructor(private jwtService: JwtService, private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride('isPublic', [
@@ -30,7 +32,7 @@ export class JwtGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
 
     try {
@@ -39,7 +41,7 @@ export class JwtGuard implements CanActivate {
       });
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
     }
     return true;
   }

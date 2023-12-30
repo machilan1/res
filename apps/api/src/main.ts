@@ -15,7 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as fs from 'fs';
 import { join } from 'path';
-import { TrimPipe } from '@res/shared';
+import { TrimPipe } from '@res/api-shared';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

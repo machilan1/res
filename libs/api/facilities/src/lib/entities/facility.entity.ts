@@ -1,5 +1,3 @@
-import { SelectFacility } from '@res/api-database';
-
 export class Facility {
   facilityId!: number;
   name!: string;

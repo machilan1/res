@@ -9,7 +9,7 @@ import { CreateHouseTypeDto } from './dtos/create-house-type.dto';
 import { HouseTypeService } from './house-type.service';
 import { HouseType } from './entities/house-type.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AccessRoles, RoleGuard } from '@res/api-shared';
+import { AccessRoles, FAIL_TO_CREATE, RoleGuard } from '@res/api-shared';
 
 @ApiTags('house-type')
 @Controller('house-type')
@@ -22,13 +22,9 @@ export class HouseTypeController {
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'createHouseType' })
   async create(
-    @Body() createHouseTypeDto: CreateHouseTypeDto,
+    @Body() createHouseTypeDto: CreateHouseTypeDto
   ): Promise<HouseType> {
     const res = await this.houseTypeService.create(createHouseTypeDto);
-
-    if (!res) {
-      throw new InternalServerErrorException('Failed to create.');
-    }
     return res;
   }
 }

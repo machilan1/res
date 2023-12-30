@@ -5,4 +5,3 @@ export * from './lib/constants/renting.constant';
 export * from './lib/regex/phone.regex';
 export * from './lib/regex/password.regex';
 export * from './lib/regex/student-number.regex';
-export * from './lib/pipes/trim.pipe';

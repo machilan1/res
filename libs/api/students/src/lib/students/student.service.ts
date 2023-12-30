@@ -3,6 +3,7 @@ import { PG_CONNECTION, Database, student, user } from '@res/api-database';
 import { and, eq, isNull } from 'drizzle-orm';
 import { Student } from './entity/students.entity';
 import { UpdateStudentDto } from './dtos/update-student.dto';
+import { USER_NOT_FOUND_ERROR_MSG } from '@res/api-shared';
 
 @Injectable()
 export class StudentService {
@@ -33,7 +34,7 @@ export class StudentService {
     });
 
     if (!res) {
-      throw new NotFoundException();
+      throw new NotFoundException(USER_NOT_FOUND_ERROR_MSG);
     }
 
     return new Student({

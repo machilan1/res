@@ -13,6 +13,7 @@ import {
 } from '@res/api-database';
 import { CreateRentingRecordDto } from './dtos/create-renting-record.dto';
 import { eq } from 'drizzle-orm';
+import { FAIL_TO_UPDATE } from '@res/api-shared';
 
 @Injectable()
 export class RentingRecordsService {
@@ -23,8 +24,6 @@ export class RentingRecordsService {
       .select({ isRented: renting.isRented })
       .from(renting)
       .where(eq(renting.rentingId, createRentingRecordDto.rentingId));
-
-    console.log('--check', check);
 
     if (!check) {
       throw new NotFoundException('Renting not found');
@@ -51,7 +50,7 @@ export class RentingRecordsService {
         return res;
       });
     } catch (err) {
-      throw new ConflictException();
+      throw new BadRequestException(FAIL_TO_UPDATE);
     }
 
     return res;

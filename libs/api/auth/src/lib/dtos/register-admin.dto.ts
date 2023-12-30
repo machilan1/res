@@ -1,4 +1,3 @@
-import { InsertAdmin, InsertUser } from '@res/api-database';
 import {
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,

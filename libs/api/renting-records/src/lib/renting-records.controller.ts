@@ -24,11 +24,10 @@ export class RentingRecordsController {
   @ApiOperation({ operationId: 'createRentingRecord' })
   @ApiBearerAuth()
   async create(
-    @Body() createRentingRecordDto: CreateRentingRecordDto,
+    @Body() createRentingRecordDto: CreateRentingRecordDto
   ): Promise<RentingRecord> {
-    console.log(12314125);
     const [res] = await this.rentingRecordsService.create(
-      createRentingRecordDto,
+      createRentingRecordDto
     );
 
     return res;
@@ -41,7 +40,7 @@ export class RentingRecordsController {
   @ApiOperation({ operationId: 'deleteRentingRecord' })
   @ApiBearerAuth()
   async delete(
-    @Param('rentingRecordId', ParseIntPipe) rentingRecordId: number,
+    @Param('rentingRecordId', ParseIntPipe) rentingRecordId: number
   ) {
     const [res] = await this.rentingRecordsService.delete(rentingRecordId);
     return res;

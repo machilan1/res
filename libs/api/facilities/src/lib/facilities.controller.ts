@@ -22,13 +22,9 @@ export class FacilitiesController {
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'createFacility' })
   async create(
-    @Body() createFacilityDto: CreateFacilityDto,
+    @Body() createFacilityDto: CreateFacilityDto
   ): Promise<Facility> {
     const res = await this.facilitiesService.create(createFacilityDto);
-    if (!res) {
-      throw new InternalServerErrorException('Fail to create');
-    }
-
     return res;
   }
 }

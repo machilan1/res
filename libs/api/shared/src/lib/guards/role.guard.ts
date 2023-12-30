@@ -1,11 +1,11 @@
 import {
   CanActivate,
-  ConflictException,
   ExecutionContext,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UNKNOWN_ERROR_MSG } from '../constants/error-messages.constant';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -14,12 +14,12 @@ export class RoleGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const excludedRoles: string[] = this.reflector.getAllAndOverride(
       'excludedRoles',
-      [context.getHandler(), context.getClass()],
+      [context.getHandler(), context.getClass()]
     );
 
     const accessibleRoles: string[] = this.reflector.getAllAndOverride(
       'roles',
-      [context.getHandler(), context.getClass()],
+      [context.getHandler(), context.getClass()]
     );
 
     const request = context.switchToHttp().getRequest();
@@ -38,6 +38,6 @@ export class RoleGuard implements CanActivate {
       return !excludedRoles.includes(role);
     }
 
-    throw new InternalServerErrorException();
+    throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
   }
 }

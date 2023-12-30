@@ -1,7 +1,5 @@
 import {
-  BadRequestException,
   CanActivate,
-  ConflictException,
   ExecutionContext,
   Inject,
   Injectable,
@@ -21,13 +19,13 @@ import { eq } from 'drizzle-orm';
 export class OwnerGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(PG_CONNECTION) private conn: Database,
+    @Inject(PG_CONNECTION) private conn: Database
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const material: string = this.reflector.getAllAndOverride(
       'ownershipOfResource',
-      [context.getHandler(), context.getClass()],
+      [context.getHandler(), context.getClass()]
     );
 
     const request = context.switchToHttp().getRequest();
@@ -41,9 +39,6 @@ export class OwnerGuard implements CanActivate {
     if (role === 'admin') {
       return true;
     }
-
-    console.log(params);
-    console.log(material);
 
     if (!material) {
       throw new UnauthorizedException();
@@ -67,7 +62,7 @@ export class OwnerGuard implements CanActivate {
 
   private async checkRentingOwner(
     rentingId: number,
-    userId: number,
+    userId: number
   ): Promise<boolean> {
     const [res] = await this.conn
       .select()
@@ -86,7 +81,7 @@ export class OwnerGuard implements CanActivate {
   }
   private async checkRentingRecordOwner(
     rentingRecordId: number,
-    userId: number,
+    userId: number
   ) {
     const res = await this.conn.query.rentingRecord.findFirst({
       with: { renting: { columns: { landlordId: true } } },

@@ -1,19 +1,11 @@
-import { Feature } from '../entity/feature.entity';
-import { Rule } from '../entity/rule.entity';
-import { Facility } from '../entity/facility.entity';
-import {
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsOptional,
-  IsPositive,
-  MaxLength,
-} from 'class-validator';
+import { Feature } from '../entity/local/feature.entity';
+import { Rule } from '../entity/local/rule.entity';
+import { IsNotEmpty, IsOptional, IsPositive, MaxLength } from 'class-validator';
 import {
   RENTING_ADDRESS_MAX_LENGTH,
   RENTING_DESCRIPTION_MAX_LENGTH,
   RENTING_TITLE_MAX_LENGTH,
 } from '@res/shared';
-import { Type } from 'class-transformer';
 
 export class UpdateRentingDto {
   // landlordId!: number;

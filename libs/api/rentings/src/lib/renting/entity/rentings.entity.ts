@@ -1,10 +1,10 @@
 import { ApiExtraModels } from '@nestjs/swagger';
-import { Campus } from './campus.entity';
-import { Facility } from './facility.entity';
-import { Feature } from './feature.entity';
-import { Landlord } from './landlord.entity';
-import { Rule } from './rule.entity';
-import { HouseType as HouseType } from './type.entity';
+import { Campus } from './local/campus.entity';
+import { Facility } from './local/facility.entity';
+import { Feature } from './local/feature.entity';
+import { Landlord } from './local/landlord.entity';
+import { Rule } from './local/rule.entity';
+import { HouseType as HouseType } from './local/type.entity';
 import { Type } from 'class-transformer';
 
 @ApiExtraModels()

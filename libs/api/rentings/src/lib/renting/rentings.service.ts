@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -25,13 +26,13 @@ import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Pagination } from 'libs/api/shared/src/lib/helpers/pagination';
-import { Rule } from './entity/rule.entity';
-import { Campus } from './entity/campus.entity';
-import { HouseType } from './entity/type.entity';
-import { Facility } from './entity/facility.entity';
-import { Feature } from './entity/feature.entity';
-import { Landlord } from './entity/landlord.entity';
-import { PaginationDto } from '@res/api-shared';
+import { Rule } from './entity/local/rule.entity';
+import { Campus } from './entity/local/campus.entity';
+import { HouseType } from './entity/local/type.entity';
+import { Facility } from './entity/local/facility.entity';
+import { Feature } from './entity/local/feature.entity';
+import { Landlord } from './entity/local/landlord.entity';
+import { FAIL_TO_CREATE, FAIL_TO_UPDATE, PaginationDto } from '@res/api-shared';
 
 @Injectable()
 export class RentingService {
@@ -67,7 +68,7 @@ export class RentingService {
       .from(renting)
       .leftJoin(
         rentingFacility,
-        eq(rentingFacility.rentingId, renting.rentingId),
+        eq(rentingFacility.rentingId, renting.rentingId)
       )
       .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
       .leftJoin(campus, eq(campus.campusId, renting.campusId))
@@ -138,7 +139,7 @@ export class RentingService {
       .from(renting)
       .leftJoin(
         rentingFacility,
-        eq(rentingFacility.rentingId, renting.rentingId),
+        eq(rentingFacility.rentingId, renting.rentingId)
       )
       .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
       .leftJoin(campus, eq(campus.campusId, renting.campusId))
@@ -153,7 +154,7 @@ export class RentingService {
         campus.campusId,
         houseType.houseTypeId,
         landlord.userId,
-        user.userId,
+        user.userId
       )
       .limit(limit)
       .offset(offset)
@@ -170,7 +171,7 @@ export class RentingService {
           campus: entry.campus!,
           houseType: entry.houseType!,
           landlord: entry.landlord!,
-        }),
+        })
     );
 
     const abc = new PaginationDto<Renting>({
@@ -260,7 +261,7 @@ export class RentingService {
             name: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
+        ])
       );
     }
 
@@ -271,7 +272,7 @@ export class RentingService {
             content: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
+        ])
       );
     }
 
@@ -282,7 +283,7 @@ export class RentingService {
             facilityId: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
+        ])
       );
     }
 
@@ -290,7 +291,7 @@ export class RentingService {
       await Promise.all(inserts);
     } catch (err) {
       console.log(err);
-      throw new ConflictException();
+      throw new ConflictException(FAIL_TO_CREATE);
     }
 
     return rentingRes;
@@ -354,9 +355,9 @@ export class RentingService {
             .where(
               and(
                 eq(feature.featureId, entry.featureId),
-                eq(feature.rentingId, rentingId),
-              ),
-            ),
+                eq(feature.rentingId, rentingId)
+              )
+            )
         );
       });
     }
@@ -368,8 +369,8 @@ export class RentingService {
             .update(rule)
             .set(entry)
             .where(
-              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId)),
-            ),
+              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId))
+            )
         );
       });
     }
@@ -387,7 +388,7 @@ export class RentingService {
           })),
         ]);
       } catch (err) {
-        throw new ConflictException();
+        throw new BadRequestException(FAIL_TO_UPDATE);
       }
     }
 
