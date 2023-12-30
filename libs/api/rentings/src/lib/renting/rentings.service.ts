@@ -68,7 +68,7 @@ export class RentingService {
       .from(renting)
       .leftJoin(
         rentingFacility,
-        eq(rentingFacility.rentingId, renting.rentingId)
+        eq(rentingFacility.rentingId, renting.rentingId),
       )
       .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
       .leftJoin(campus, eq(campus.campusId, renting.campusId))
@@ -133,13 +133,13 @@ export class RentingService {
         facilities: sql<Facility[]>`json_agg(${facility})`,
         features: sql<Feature[]>`json_agg(DISTINCT ${feature})`,
         createdAt: renting.createdAt,
-        landlord: sql<Landlord>`jsonb_build_object('landlordId',${landlord.userId},'name',${user.name},'phone',${user.phone},'email',${landlord.email},'startTime',${landlord.contactTime} ->> 'start' ,'endTime',${landlord.contactTime} ->>'end','banned',${landlord.banned})`,
+        landlord: sql<Landlord>`jsonb_build_object('landlordId',${landlord.userId},'name',${user.name},'phone',${user.phone},'email',${landlord.email},'startTime',${landlord.contactTimeStart} ,'endTime',${landlord.contactTimeEnd},'banned',${landlord.banned})`,
         isRented: renting.isRented,
       })
       .from(renting)
       .leftJoin(
         rentingFacility,
-        eq(rentingFacility.rentingId, renting.rentingId)
+        eq(rentingFacility.rentingId, renting.rentingId),
       )
       .leftJoin(facility, eq(facility.facilityId, rentingFacility.facilityId))
       .leftJoin(campus, eq(campus.campusId, renting.campusId))
@@ -154,7 +154,7 @@ export class RentingService {
         campus.campusId,
         houseType.houseTypeId,
         landlord.userId,
-        user.userId
+        user.userId,
       )
       .limit(limit)
       .offset(offset)
@@ -171,7 +171,7 @@ export class RentingService {
           campus: entry.campus!,
           houseType: entry.houseType!,
           landlord: entry.landlord!,
-        })
+        }),
     );
 
     const abc = new PaginationDto<Renting>({
@@ -208,8 +208,8 @@ export class RentingService {
       landlord: {
         landlordId: res.landlord!.userId,
         name: res.landlord!.user.name,
-        startTime: res.landlord!.contactTime!.start,
-        endTime: res.landlord!.contactTime!.end,
+        startTime: res.landlord!.contactTimeStart,
+        endTime: res.landlord!.contactTimeEnd,
         phone: res.landlord!.user.phone,
         email: res.landlord!.email,
         banned: res.landlord!.banned,
@@ -261,7 +261,7 @@ export class RentingService {
             name: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -272,7 +272,7 @@ export class RentingService {
             content: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -283,7 +283,7 @@ export class RentingService {
             facilityId: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ])
+        ]),
       );
     }
 
@@ -355,9 +355,9 @@ export class RentingService {
             .where(
               and(
                 eq(feature.featureId, entry.featureId),
-                eq(feature.rentingId, rentingId)
-              )
-            )
+                eq(feature.rentingId, rentingId),
+              ),
+            ),
         );
       });
     }
@@ -369,8 +369,8 @@ export class RentingService {
             .update(rule)
             .set(entry)
             .where(
-              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId))
-            )
+              and(eq(rule.ruleId, entry.ruleId), eq(rule.rentingId, rentingId)),
+            ),
         );
       });
     }

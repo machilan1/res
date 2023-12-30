@@ -5,20 +5,16 @@ import {
   PHONE_MIN_LENGTH,
   PHONE_REGEX,
 } from '@res/shared';
-import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
   Matches,
+  Max,
   MaxLength,
   MinLength,
 } from 'class-validator';
-
-class ContactTime {
-  start!: number;
-  end!: number;
-}
 
 export class UpdateLandlordDto {
   @IsOptional()
@@ -40,7 +36,13 @@ export class UpdateLandlordDto {
   @IsBoolean()
   banned?: boolean;
 
-  @Type(() => ContactTime)
   @IsOptional()
-  contactTime?: ContactTime;
+  @IsPositive()
+  @Max(24)
+  contactTimeStart?: number;
+
+  @IsOptional()
+  @IsPositive()
+  @Max(24)
+  contactTimeEnd?: number;
 }

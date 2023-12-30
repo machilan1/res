@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -27,7 +26,13 @@ export class LandlordService {
       with: { user: true, rentings: { where: isNull(renting.deletedAt) } },
       limit: params.limit,
       offset: params.offset,
-      columns: { banned: true, contactTime: true, email: true, userId: true },
+      columns: {
+        banned: true,
+        contactTimeEnd: true,
+        contactTimeStart: true,
+        email: true,
+        userId: true,
+      },
       where: isNull(landlord.deletedAt),
     });
 
@@ -48,7 +53,7 @@ export class LandlordService {
 
   async updateLandlord(landlordId: number, body: UpdateLandlordDto) {
     const { name, phone } = body;
-    const { email, banned, contactTime } = body;
+    const { email, banned, contactTimeStart, contactTimeEnd } = body;
 
     try {
       await this.conn.transaction(async (tx) => {
@@ -60,12 +65,12 @@ export class LandlordService {
             .returning();
         }
 
-        if (email || banned || contactTime) {
+        if (email || banned || contactTimeEnd || contactTimeStart) {
           await tx
             .update(landlord)
-            .set({ email, banned, contactTime })
+            .set({ email, banned, contactTimeEnd, contactTimeStart })
             .where(
-              and(eq(landlord.userId, landlordId), isNull(landlord.deletedAt))
+              and(eq(landlord.userId, landlordId), isNull(landlord.deletedAt)),
             );
         }
       });

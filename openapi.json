@@ -1365,10 +1365,10 @@
           "email": {
             "type": "string"
           },
-          "startTime": {
+          "contactTimeStart": {
             "type": "number"
           },
-          "endTime": {
+          "contactTimeEnd": {
             "type": "number"
           },
           "banned": {
@@ -1381,8 +1381,8 @@
           "name",
           "phone",
           "email",
-          "startTime",
-          "endTime",
+          "contactTimeStart",
+          "contactTimeEnd",
           "banned"
         ]
       },
@@ -1406,8 +1406,15 @@
           "banned": {
             "type": "boolean"
           },
-          "contactTime": {
-            "$ref": "#/components/schemas/ContactTime"
+          "contactTimeStart": {
+            "type": "number",
+            "maximum": 24,
+            "minimum": 1
+          },
+          "contactTimeEnd": {
+            "type": "number",
+            "maximum": 24,
+            "minimum": 1
           }
         }
       },

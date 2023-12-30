@@ -1,5 +1,5 @@
 {
-  "id": "02e45d4a-7ce2-4acc-bd53-40987b4ded8c",
+  "id": "388c0d95-d9a9-484d-be5d-affe8b86c1c4",
   "prevId": "0f02f167-08cf-4ee3-9bfd-86facd2c133e",
   "version": "5",
   "dialect": "pg",
@@ -800,8 +800,6 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {
-      "\"landlord\".\"contact_time\"": "\"landlord\".\"contact_time_start\""
-    }
+    "columns": {}
   }
 }

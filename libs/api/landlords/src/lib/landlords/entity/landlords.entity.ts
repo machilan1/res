@@ -25,8 +25,8 @@ export class Landlord {
   @IsArray()
   @ApiProperty({ type: [RentingRes] })
   rentings!: RentingRes[];
-  startTime!: number;
-  endTime!: number;
+  contactTimeStart!: number;
+  contactTimeEnd!: number;
   banned!: boolean;
 
   constructor(data: getLandlordsRes) {
@@ -36,8 +36,8 @@ export class Landlord {
     this.name = data.user.name;
     this.phone = data.user.phone;
     this.rentings = data.rentings;
-    this.startTime = data.contactTime!.start;
-    this.endTime = data.contactTime!.end;
+    this.contactTimeStart = data.contactTimeStart;
+    this.contactTimeEnd = data.contactTimeEnd;
   }
 }
 
@@ -45,7 +45,8 @@ export class getLandlordsRes {
   userId!: number;
   email!: string;
   banned!: boolean;
-  contactTime!: { start: number; end: number } | null;
+  contactTimeStart!: number;
+  contactTimeEnd!: number;
   user!: {
     role: 'student' | 'landlord' | 'admin';
     userId: number;
