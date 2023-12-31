@@ -224,7 +224,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/AccessToken"
                 }
               }
             }
@@ -1242,6 +1242,17 @@
         "required": [
           "email",
           "password"
+        ]
+      },
+      "AccessToken": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
         ]
       },
       "UploadResponse": {

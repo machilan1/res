@@ -24,8 +24,6 @@ import {
 import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { Pagination } from 'libs/api/shared/src/lib/helpers/pagination';
 import { Rule } from './entity/local/rule.entity';
 import { Campus } from './entity/local/campus.entity';
 import { HouseType } from './entity/local/type.entity';
@@ -33,14 +31,20 @@ import { Facility } from './entity/local/facility.entity';
 import { Feature } from './entity/local/feature.entity';
 import { Landlord } from './entity/local/landlord.entity';
 import { FAIL_TO_CREATE, FAIL_TO_UPDATE, PaginationDto } from '@res/api-shared';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RentingService {
-  constructor(@Inject(PG_CONNECTION) private conn: Database) {}
+  constructor(
+    @Inject(PG_CONNECTION) private conn: Database,
+    private configService: ConfigService,
+  ) {}
 
-  async getRentings(params: GetRentingsParam): Promise<Pagination<Renting>> {
+  async getRentings(params: GetRentingsParam): Promise<PaginationDto<Renting>> {
     let limit;
     let offset;
+
+    // Todo :this should be one query
 
     const subquery = this.conn
       .select({
@@ -244,7 +248,8 @@ export class RentingService {
         totalFloor,
         images,
         landlordId:
-          process.env['ENV'] === 'dev'
+          // This is for seeding purpose in DEV environment.
+          this.configService.get('ENV') === 'dev'
             ? 1 + Math.floor(Math.random() * 10)
             : landlordId,
       })

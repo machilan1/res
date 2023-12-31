@@ -7,9 +7,9 @@ export interface AttachedUser {
 }
 
 export const GetCurrentUser = createParamDecorator(
-  (data: string | undefined, context: ExecutionContext): AttachedUser => {
+  (field: string | undefined, context: ExecutionContext): AttachedUser => {
     const request = context.switchToHttp().getRequest();
-    if (!data) return request[USER];
-    return request[USER][data];
+    if (!field) return request[USER];
+    return request[USER][field];
   },
 );

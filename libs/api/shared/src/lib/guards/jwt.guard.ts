@@ -2,29 +2,27 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import {
-  CREDENTIAL_ERROR_MSG,
-  UNKNOWN_ERROR_MSG,
-} from '../constants/error-messages.constant';
+import { CREDENTIAL_ERROR_MSG } from '../constants/error-messages.constant';
 import { USER } from '../constants/context-meta.constant';
-
 import { AttachedUser } from '../decorators/get-current-user.decorator';
+import { IS_PUBLIC } from '../constants/reflector.constant';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
+    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride('isPublic', [
+    const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -42,12 +40,12 @@ export class JwtGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env['JWT_SECRET'],
+      const payload = await this.jwtService.verifyAsync<AttachedUser>(token, {
+        secret: this.configService.getOrThrow('JWT_SECRET'),
       });
-      request[USER] = payload as AttachedUser;
+      request[USER] = payload;
     } catch {
-      throw new InternalServerErrorException(UNKNOWN_ERROR_MSG);
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
     return true;
   }

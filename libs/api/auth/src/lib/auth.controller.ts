@@ -23,11 +23,15 @@ import {
   AttachedUser,
 } from '@res/api-shared';
 import { AccessToken } from './responses/access-token.response';
+import { JwtService } from '@nestjs/jwt';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private jwtService: JwtService,
+  ) {}
 
   @Public()
   @Post('register-student')
@@ -90,9 +94,7 @@ export class AuthController {
       throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
     }
 
-    console.log(user);
     const [type, token] = refreshToken.token.split(' ');
-
     return this.authService.refreshAccessToken(user.userId, token);
   }
 }

@@ -323,7 +323,6 @@ export class AuthService {
     userId: number,
     refreshToken: string,
   ): Promise<AccessToken> {
-    console.log(userId, refreshToken);
     const [res] = await this.conn
       .select({ refreshTokenHash: user.refreshToken, role: user.role })
       .from(user)
@@ -333,7 +332,7 @@ export class AuthService {
       throw new BadRequestException();
     }
 
-    const matches = await this.checkRefreshToken(
+    const matches = await this.inspectRefreshToken(
       refreshToken,
       res.refreshTokenHash,
     );
@@ -383,10 +382,7 @@ export class AuthService {
     return res;
   }
 
-  private async signTokens(selectUser: {
-    userId: number;
-    role: string;
-  }): Promise<Tokens> {
+  private async signTokens(selectUser: AttachedUser): Promise<Tokens> {
     try {
       const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(
@@ -427,22 +423,23 @@ export class AuthService {
     return res;
   }
 
-  private async checkRefreshToken(
+  private async inspectRefreshToken(
     refreshToken: string,
     hash: string,
   ): Promise<boolean> {
     const compareRes = await bcrypt.compare(refreshToken, hash);
 
+    if (!compareRes) {
+      throw new UnauthorizedException(CREDENTIAL_ERROR_MSG);
+    }
+
     const valid = this.validateToken(refreshToken);
 
-    console.log(valid);
     return valid;
   }
 
   private async validateToken(token: string): Promise<boolean> {
     const res = await this.jwtService.verifyAsync<AttachedUser>(token);
-
-    console.log(res);
     if (!res) {
       return false;
     }
