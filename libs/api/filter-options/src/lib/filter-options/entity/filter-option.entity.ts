@@ -3,7 +3,7 @@ import { Facility } from './facility.entity';
 import { HouseType } from './type.entity';
 
 export class FilterOption {
-  campus!: Campus[];
-  houseType!: HouseType[];
+  campuses!: Campus[];
+  houseTypes!: HouseType[];
   facilities!: Facility[];
 }

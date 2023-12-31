@@ -5,6 +5,7 @@ export const CREDENTIAL_ERROR_MSG = 'Invalid credential';
 export const REGISTER_ERROR_MSG = 'Fail to Register';
 
 // Generals
+
 export const FAIL_TO_CREATE = 'Failed to create resource';
 export const FAIL_TO_UPDATE = 'Failed to update resource';
 export const UNKNOWN_ERROR_MSG = 'Unknown error';

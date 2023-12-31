@@ -391,6 +391,7 @@ export class AuthService {
             role: selectUser!.role,
           },
           {
+            secret: this.configService.getOrThrow('JWT_SECRET'),
             expiresIn:
               this.configService.get('ACCESS_TOKEN_HOURS_TILL_EXPIRE') + 'h',
           },
@@ -401,6 +402,7 @@ export class AuthService {
             role: selectUser!.role,
           },
           {
+            secret: this.configService.getOrThrow('JWT_SECRET'),
             expiresIn:
               this.configService.get('REFRESH_TOKEN_DAYS_TILL_EXPIRE') + 'd',
           },
@@ -439,7 +441,9 @@ export class AuthService {
   }
 
   private async validateToken(token: string): Promise<boolean> {
-    const res = await this.jwtService.verifyAsync<AttachedUser>(token);
+    const res = await this.jwtService.verifyAsync<AttachedUser>(token, {
+      secret: this.configService.getOrThrow('JWT_SECRET'),
+    });
     if (!res) {
       return false;
     }

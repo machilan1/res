@@ -13,7 +13,7 @@ import {
 } from '@res/api-database';
 import { CreateRentingRecordDto } from './dtos/create-renting-record.dto';
 import { eq } from 'drizzle-orm';
-import { FAIL_TO_UPDATE } from '@res/api-shared';
+import { FAIL_TO_CREATE, FAIL_TO_UPDATE } from '@res/api-shared';
 
 @Injectable()
 export class RentingRecordsService {
@@ -50,7 +50,7 @@ export class RentingRecordsService {
         return res;
       });
     } catch (err) {
-      throw new BadRequestException(FAIL_TO_UPDATE);
+      throw new BadRequestException(FAIL_TO_CREATE);
     }
 
     return res;

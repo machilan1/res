@@ -1462,13 +1462,13 @@
       "FilterOption": {
         "type": "object",
         "properties": {
-          "campus": {
+          "campuses": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Campus"
             }
           },
-          "houseType": {
+          "houseTypes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/HouseType"
@@ -1482,8 +1482,8 @@
           }
         },
         "required": [
-          "campus",
-          "houseType",
+          "campuses",
+          "houseTypes",
           "facilities"
         ]
       },

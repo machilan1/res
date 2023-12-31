@@ -7,23 +7,36 @@ import {
   facility,
 } from '@res/api-database';
 import { FilterOption } from './entity/filter-option.entity';
-import { Campus } from './entity/campus.entity';
-import { HouseType } from './entity/type.entity';
-import { Facility } from './entity/facility.entity';
+import { isNull } from 'drizzle-orm';
 
 @Injectable()
 export class FilterOptionsService {
   constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
   async getFilterOptions(): Promise<FilterOption> {
-    const campuses = await this.conn.select().from(campus);
-    const types = await this.conn.select().from(houseType);
-    const facilities = await this.conn.select().from(facility);
+    const res = await this.conn.transaction(async (tx) => {
+      const campuses = await tx
+        .select({ campusId: campus.campusId, name: campus.name })
+        .from(campus)
+        .where(isNull(campus.deletedAt));
 
-    return {
-      campus: campuses.map((entry) => new Campus(entry)),
-      houseType: types.map((entry) => new HouseType(entry)),
-      facilities: facilities.map((entry) => new Facility(entry)),
-    };
+      const houseTypes = await tx
+        .select({ houseTypeId: houseType.houseTypeId, name: houseType.name })
+        .from(houseType)
+        .where(isNull(houseType.deletedAt));
+
+      const facilities = await tx
+        .select({
+          facilityId: facility.facilityId,
+          name: facility.name,
+          icon: facility.icon,
+        })
+        .from(facility)
+        .where(isNull(facility.deletedAt));
+
+      return { campuses, houseTypes, facilities };
+    });
+
+    return res;
   }
 }

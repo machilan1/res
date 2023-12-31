@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UNKNOWN_ERROR_MSG } from '../constants/error-messages.constant';
+import { EXCLUDED_ROLES, GRANTED_ROLES } from '../constants/reflector.constant';
+import { USER } from '../constants/context-meta.constant';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -14,21 +16,21 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const excludedRoles: string[] = this.reflector.getAllAndOverride(
-      'excludedRoles',
+      EXCLUDED_ROLES,
       [context.getHandler(), context.getClass()],
     );
 
     const accessibleRoles: string[] = this.reflector.getAllAndOverride(
-      'roles',
+      GRANTED_ROLES,
       [context.getHandler(), context.getClass()],
     );
 
     const request = context.switchToHttp().getRequest();
 
-    if (!request['user']) {
+    if (!request[USER]) {
       throw new UnauthorizedException();
     }
-    const role = request['user'].role;
+    const role = request[USER].role;
 
     if (role === 'admin') {
       return true;

@@ -14,27 +14,29 @@ import {
   rentingRecord,
 } from '@res/api-database';
 import { eq } from 'drizzle-orm';
+import { USER } from '../constants/context-meta.constant';
+import { OWNER_OF_RESOURCE } from '../constants/reflector.constant';
 
 @Injectable()
 export class OwnerGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(PG_CONNECTION) private conn: Database
+    @Inject(PG_CONNECTION) private conn: Database,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const material: string = this.reflector.getAllAndOverride(
-      'ownershipOfResource',
-      [context.getHandler(), context.getClass()]
+      OWNER_OF_RESOURCE,
+      [context.getHandler(), context.getClass()],
     );
 
     const request = context.switchToHttp().getRequest();
 
     const params = request.params;
 
-    const userId = request['user'].userId;
+    const userId = request[USER].userId;
 
-    const role = request['user'].role;
+    const role = request[USER].role;
 
     if (role === 'admin') {
       return true;
@@ -62,7 +64,7 @@ export class OwnerGuard implements CanActivate {
 
   private async checkRentingOwner(
     rentingId: number,
-    userId: number
+    userId: number,
   ): Promise<boolean> {
     const [res] = await this.conn
       .select()
@@ -81,7 +83,7 @@ export class OwnerGuard implements CanActivate {
   }
   private async checkRentingRecordOwner(
     rentingRecordId: number,
-    userId: number
+    userId: number,
   ) {
     const res = await this.conn.query.rentingRecord.findFirst({
       with: { renting: { columns: { landlordId: true } } },

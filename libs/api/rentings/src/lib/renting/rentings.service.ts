@@ -397,7 +397,7 @@ export class RentingService {
     }
 
     try {
-      const res = await Promise.all(updates);
+      await Promise.all(updates);
     } catch (err) {
       console.log(err);
     }
