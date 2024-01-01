@@ -21,7 +21,16 @@ import {
   landlord,
   user,
 } from '@res/api-database';
-import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import {
+  and,
+  count,
+  desc,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  sql,
+} from 'drizzle-orm';
 import { Renting } from './entity/rentings.entity';
 import { UpdateRentingDto } from './dtos/update-renting.dto';
 import { Rule } from './entity/local/rule.entity';
@@ -31,15 +40,11 @@ import { Facility } from './entity/local/facility.entity';
 import { Feature } from './entity/local/feature.entity';
 import { Landlord } from './entity/local/landlord.entity';
 import { FAIL_TO_CREATE, FAIL_TO_UPDATE, PaginationDto } from '@res/api-shared';
-import { ConfigService } from '@nestjs/config';
 import { calculateOffset } from './helper/offset-calc.helper';
 
 @Injectable()
 export class RentingService {
-  constructor(
-    @Inject(PG_CONNECTION) private conn: Database,
-    private configService: ConfigService,
-  ) {}
+  constructor(@Inject(PG_CONNECTION) private conn: Database) {}
 
   async getRentings(params: GetRentingsParam): Promise<PaginationDto<Renting>> {
     const { limitParam, pageParam } = params;
@@ -135,9 +140,7 @@ export class RentingService {
       .offset(offset)
       .$dynamic();
 
-    const filteredData = dataRes.where(and(...filter));
-
-    const temp = await filteredData;
+    const temp = await dataRes.where(and(...filter));
 
     const filterRes = temp.map(
       (entry) =>
@@ -156,6 +159,7 @@ export class RentingService {
 
     return res;
   }
+
   async getRentingById(rentingId: number): Promise<Renting> {
     const res = await this.conn.query.renting.findFirst({
       with: {
@@ -166,7 +170,10 @@ export class RentingService {
         rules: true,
         houseType: true,
       },
-      where: eq(renting.rentingId, rentingId),
+      where: and(
+        eq(renting.rentingId, rentingId),
+        isNotNull(renting.deletedAt),
+      ),
     });
     if (!res) {
       throw new NotFoundException();
