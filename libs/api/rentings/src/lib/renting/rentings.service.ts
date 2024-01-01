@@ -212,65 +212,55 @@ export class RentingService {
       images,
     }: Omit<InsertRenting, 'landlordId'> = body;
 
-    const [rentingRes] = await this.conn
-      .insert(renting)
-      .values({
-        campusId,
-        houseTypeId,
-        description,
-        address,
-        price,
-        title,
-        square,
-        floor,
-        totalFloor,
-        images,
-        landlordId: landlordId,
-      })
-      .returning();
+    const rentingRes = await this.conn.transaction(async (tx) => {
+      const [rentingRes] = await tx
+        .insert(renting)
+        .values({
+          campusId,
+          houseTypeId,
+          description,
+          address,
+          price,
+          title,
+          square,
+          floor,
+          totalFloor,
+          images,
+          landlordId: landlordId,
+        })
+        .returning();
 
-    const { features, rules, facilityIds } = body;
-    const inserts = [];
+      const { features, rules, facilityIds } = body;
 
-    if (features && features.length > 0) {
-      inserts.push(
-        this.conn.insert(feature).values([
+      if (features && features.length > 0) {
+        await tx.insert(feature).values([
           ...features.map((entry) => ({
             name: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
-      );
-    }
+        ]);
+      }
 
-    if (rules && rules.length > 0) {
-      inserts.push(
-        this.conn.insert(rule).values([
+      if (rules && rules.length > 0) {
+        await tx.insert(rule).values([
           ...rules.map((entry) => ({
             content: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
-      );
-    }
+        ]);
+      }
 
-    if (facilityIds && facilityIds.length > 0) {
-      inserts.push(
-        this.conn.insert(rentingFacility).values([
+      if (facilityIds && facilityIds.length > 0) {
+        await tx.insert(rentingFacility).values([
           ...facilityIds.map((entry) => ({
             facilityId: entry,
             rentingId: rentingRes.rentingId,
           })),
-        ]),
-      );
-    }
+        ]);
+      }
 
-    try {
-      await Promise.all(inserts);
-    } catch (err) {
-      console.log(err);
-      throw new ConflictException(FAIL_TO_CREATE);
-    }
+      return rentingRes;
+    });
 
     return rentingRes;
   }
