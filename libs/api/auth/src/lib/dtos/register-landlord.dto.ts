@@ -1,7 +1,7 @@
 import { IsOptional, Min, ValidateIf } from 'class-validator';
 
 import {
-  IsBiggerThan,
+  NotSmallerThan,
   START_IS_LARGER_ERR,
   ValidateEmail,
   ValidateName,
@@ -28,7 +28,7 @@ export class RegisterLandlordDto {
 
   @IsOptional()
   @ValidateIf((entry) => entry.contactTimeStart)
-  @IsBiggerThan('contactTimeStart', {
+  @NotSmallerThan('contactTimeStart', {
     message: START_IS_LARGER_ERR,
   })
   contactTimeEnd!: number;

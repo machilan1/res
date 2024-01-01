@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -13,7 +12,7 @@ import {
 } from '@res/api-database';
 import { CreateRentingRecordDto } from './dtos/create-renting-record.dto';
 import { eq } from 'drizzle-orm';
-import { FAIL_TO_CREATE, FAIL_TO_UPDATE } from '@res/api-shared';
+import { FAIL_TO_CREATE } from '@res/api-shared';
 
 @Injectable()
 export class RentingRecordsService {

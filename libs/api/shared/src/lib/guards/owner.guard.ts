@@ -10,10 +10,12 @@ import {
   Database,
   PG_CONNECTION,
   favorite,
+  landlord,
   renting,
   rentingRecord,
+  user,
 } from '@res/api-database';
-import { eq } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 import { USER } from '../constants/context-meta.constant';
 import { OWNER_OF_RESOURCE } from '../constants/reflector.constant';
 
@@ -69,9 +71,19 @@ export class OwnerGuard implements CanActivate {
     const [res] = await this.conn
       .select()
       .from(renting)
-      .where(eq(renting.landlordId, userId));
+      .where(
+        and(
+          eq(renting.landlordId, userId),
+          eq(renting.rentingId, rentingId),
+          isNull(renting.deletedAt),
+        ),
+      );
 
-    return res.rentingId === rentingId;
+    if (!res) {
+      return false;
+    }
+
+    return true;
   }
 
   private async checkStudentOwner(studentId: number, userId: number) {
@@ -81,31 +93,39 @@ export class OwnerGuard implements CanActivate {
   private async checkLandlordOwner(landlordId: number, userId: number) {
     return landlordId === userId;
   }
+
   private async checkRentingRecordOwner(
     rentingRecordId: number,
-    userId: number,
+    landlordId: number,
   ) {
     const res = await this.conn.query.rentingRecord.findFirst({
       with: { renting: { columns: { landlordId: true } } },
-      where: eq(rentingRecord.rentingRecordId, rentingRecordId),
+      where: and(
+        eq(rentingRecord.rentingRecordId, rentingRecordId),
+        isNull(rentingRecord.deletedAt),
+      ),
     });
 
     if (!res) {
       return false;
     }
 
-    return res?.renting.landlordId === userId;
+    return res.renting.landlordId === landlordId;
   }
 
-  private async checkFavoriteOwner(favoriteId: number, userId: number) {
+  private async checkFavoriteOwner(favoriteId: number, studentId: number) {
     const res = await this.conn.query.favorite.findFirst({
-      where: eq(favorite.favoriteId, favoriteId),
+      where: and(
+        eq(favorite.favoriteId, favoriteId),
+        eq(favorite.studentId, studentId),
+        isNull(favorite.deletedAt),
+      ),
     });
 
     if (!res) {
       return false;
     }
 
-    return res.studentId === userId;
+    return true;
   }
 }

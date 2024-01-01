@@ -1,4 +1,3 @@
-export * from './lib/shared';
 export * from './lib/constants/files.constant';
 export * from './lib/constants/user.constant';
 export * from './lib/constants/renting.constant';

@@ -66,6 +66,7 @@ export class RentingsController {
     user: AttachedUser,
     @Body() createRentingDto: CreateRentingDto,
   ): Promise<SelectRenting> {
+    console.log(user);
     const res = await this.rentingService.createRenting(
       user.userId,
       createRentingDto,

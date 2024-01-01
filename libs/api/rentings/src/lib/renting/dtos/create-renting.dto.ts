@@ -4,13 +4,13 @@ import {
   IsOptional,
   IsPositive,
   MaxLength,
-  MinLength,
 } from 'class-validator';
 import {
   RENTING_ADDRESS_MAX_LENGTH,
   RENTING_DESCRIPTION_MAX_LENGTH,
   RENTING_TITLE_MAX_LENGTH,
 } from '@res/shared';
+import { NotSmallerThan } from '@res/api-shared';
 
 export class CreateRentingDto {
   @IsNotEmpty()
@@ -41,18 +41,22 @@ export class CreateRentingDto {
   floor!: number;
 
   @IsPositive()
+  @NotSmallerThan('floor')
   totalFloor!: number;
 
   @IsOptional()
-  @MinLength(1, { each: true })
+  @IsArray()
+  @IsNotEmpty({ each: true })
   images?: string[] | undefined;
 
   @IsOptional()
-  @MinLength(1, { each: true })
+  @IsArray()
+  @IsNotEmpty({ each: true })
   features?: string[] | undefined;
 
   @IsOptional()
-  @MinLength(1, { each: true })
+  @IsArray()
+  @IsNotEmpty({ each: true })
   rules?: string[] | undefined;
 
   @IsOptional()

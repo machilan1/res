@@ -34,7 +34,7 @@ import { ApiFavoritesModule } from '@res/api-favorites';
     ApiFavoritesModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secretOrPrivateKey: configService.getOrThrow('JWT_SECRET'),
+        secret: configService.getOrThrow('JWT_SECRET'),
         global: true,
       }),
       inject: [ConfigService],

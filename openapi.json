@@ -1672,22 +1672,19 @@
           "images": {
             "type": "array",
             "items": {
-              "type": "string",
-              "minLength": 1
+              "type": "string"
             }
           },
           "features": {
             "type": "array",
             "items": {
-              "type": "string",
-              "minLength": 1
+              "type": "string"
             }
           },
           "rules": {
             "type": "array",
             "items": {
-              "type": "string",
-              "minLength": 1
+              "type": "string"
             }
           },
           "facilityIds": {

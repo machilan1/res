@@ -37,11 +37,19 @@ export class GetRentingsParam {
 
   @IsOptional()
   @IsPositive()
-  @Transform(({ value }) => (parseInt(value) > 100 ? 100 : parseInt(value)))
+  @Transform(({ value }) => parseInt(value))
   limit?: number;
 
   @IsOptional()
   @Min(0)
   @Transform(({ value }) => parseInt(value))
   page?: number;
+
+  get limitParam() {
+    return this.limit ? (this.limit > 100 ? 100 : this.limit) : 20;
+  }
+
+  get pageParam() {
+    return this.page ? this.page : 0;
+  }
 }

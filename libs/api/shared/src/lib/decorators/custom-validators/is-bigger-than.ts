@@ -4,7 +4,7 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-export function IsBiggerThan(
+export function NotSmallerThan(
   property: string,
   validationOptions?: ValidationOptions,
 ) {
@@ -23,7 +23,7 @@ export function IsBiggerThan(
           return (
             typeof value === 'number' &&
             typeof relatedValue === 'number' &&
-            value > relatedValue
+            value >= relatedValue
           );
         },
       },

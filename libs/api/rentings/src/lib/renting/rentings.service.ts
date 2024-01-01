@@ -32,6 +32,7 @@ import { Feature } from './entity/local/feature.entity';
 import { Landlord } from './entity/local/landlord.entity';
 import { FAIL_TO_CREATE, FAIL_TO_UPDATE, PaginationDto } from '@res/api-shared';
 import { ConfigService } from '@nestjs/config';
+import { calculateOffset } from './helper/offset-calc.helper';
 
 @Injectable()
 export class RentingService {
@@ -41,29 +42,19 @@ export class RentingService {
   ) {}
 
   async getRentings(params: GetRentingsParam): Promise<PaginationDto<Renting>> {
-    let limit;
-    let offset;
-
-    // Todo :this should be one query
-
+    const { limitParam, pageParam } = params;
     const subquery = this.conn
       .select({
         rentingId: rentingFacility.rentingId,
-        count: count(),
       })
       .from(rentingFacility)
       .groupBy(rentingFacility.rentingId)
       .$dynamic();
-
     if (params.facilityIds) {
       subquery
         .where(inArray(rentingFacility.facilityId, params.facilityIds))
         .having(eq(count(), params.facilityIds.length));
     }
-
-    const subRes = await subquery;
-
-    const filteredRentingIds = subRes.map((entry) => entry.rentingId);
 
     const countRes = this.conn
       .select({
@@ -81,39 +72,19 @@ export class RentingService {
       .$dynamic();
 
     const filter = [];
-
-    filter.push(inArray(renting.rentingId, filteredRentingIds));
-
+    filter.push(isNull(renting.deletedAt));
+    filter.push(inArray(renting.rentingId, subquery));
     if (params.houseTypeIds) {
       filter.push(inArray(houseType.houseTypeId, params.houseTypeIds));
     }
-
     if (params.campusIds) {
       filter.push(inArray(campus.campusId, params.campusIds));
     }
+    const filteredCount = (await countRes.where(and(...filter))).length;
 
-    const afterFiltered = await countRes.where(and(...filter));
-
-    const filteredCount = afterFiltered.length;
-
-    if (params.limit) {
-      limit = params.limit > 100 ? 100 : params.limit;
-    } else {
-      limit = 20;
-    }
-
-    let page = params.page ? params.page : 0;
-
-    if (limit && page) {
-      if (limit * (page + 1) > filteredCount) {
-        page =
-          filteredCount % limit === 0
-            ? Math.floor(filteredCount / limit) - 1
-            : Math.floor(filteredCount / limit);
-        offset = limit * page;
-      } else {
-        offset = limit * page;
-      }
+    let offset;
+    if (limitParam && pageParam) {
+      offset = calculateOffset(filteredCount, limitParam, pageParam);
     } else {
       offset = 0;
     }
@@ -160,7 +131,7 @@ export class RentingService {
         landlord.userId,
         user.userId,
       )
-      .limit(limit)
+      .limit(limitParam)
       .offset(offset)
       .$dynamic();
 
@@ -180,7 +151,7 @@ export class RentingService {
 
     const res = new PaginationDto<Renting>({
       data: filterRes,
-      meta: { limit, page, total: filteredCount },
+      meta: { limit: limitParam, page: pageParam, total: filteredCount },
     });
 
     return res;
@@ -247,11 +218,7 @@ export class RentingService {
         floor,
         totalFloor,
         images,
-        landlordId:
-          // This is for seeding purpose in DEV environment.
-          this.configService.get('ENV') === 'dev'
-            ? 1 + Math.floor(Math.random() * 10)
-            : landlordId,
+        landlordId: landlordId,
       })
       .returning();
 

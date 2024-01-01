@@ -45,7 +45,7 @@ async function main() {
   await seedStudent(STUDENT_COUNT);
   await seedAdmin(ADMIN_COUNT);
   await seedRentings(RENTING_COUNT);
-  await console.log('Seeding completes');
+  console.log('Seeding completes');
 }
 
 async function seedHouseType(houseTypes: string[]) {
